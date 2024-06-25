@@ -68,7 +68,9 @@ def evaluate_submission(question: str, transcript: str):
     return submission_summary, submission_score
 
 
-def evaluate_application(uuid: str) -> Tuple[str, float]:
+def evaluate_application(
+    uuid: str, recruitment_uuid: str, add_to_db=True
+) -> Tuple[str, float]:
     # evaluate each submission individually
     with Session(engine) as session:
         query = select(Submission).where(Submission.application_uuid == uuid)
@@ -86,5 +88,16 @@ def evaluate_application(uuid: str) -> Tuple[str, float]:
             all_summaries
         )
         score_average = total_score / len(applications)
+
+        if add_to_db:
+            new_uuid = utils.gen_uuid()
+            newEvaluation = Evaluation(
+                uuid=new_uuid,
+                recruitment_uuid=recruitment_uuid,
+                general_summary=entirety_summary,
+                general_score=score_average,
+            )
+            session.add(newEvaluation)
+            session.commit()
 
         return entirety_summary, score_average

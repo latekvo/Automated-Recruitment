@@ -5,6 +5,7 @@ from database import (
     add_recruitment,
     add_submission,
     add_task,
+    get_best_applicants,
     init_db,
 )
 import evaluator
@@ -28,20 +29,27 @@ task_accomplish = add_task(
     recruitment, "Are there any acomplishments you'd like to tell us about?"
 )
 
-application_ap = add_application(recruitment)
-add_personal_data(application_ap, "Arthur Powell")
+arthur_powell = add_personal_data("Arthur Powell")
+application_ap = add_application(recruitment, arthur_powell)
 add_submission(application_ap, task_experience)
 add_submission(application_ap, task_good)
 add_submission(application_ap, task_challenge)
 add_submission(application_ap, task_accomplish)
 
-summary, score = evaluator.evaluate_application(application_ap)
+jonathan_max = add_personal_data("Jonathan Max")
+application_jm = add_application(recruitment, jonathan_max)
+add_submission(application_jm, task_experience)
+add_submission(application_jm, task_good)
+add_submission(application_jm, task_challenge)
+add_submission(application_jm, task_accomplish)
 
-# normal to see negatives if the AI thinks the interview is abhorrent
-print(
-    f"{Fore.CYAN}{Style.BRIGHT}normalized score: ",
-    score * 100,
-    f"%{Style.RESET_ALL}",
-    sep=None,
-)
-print(f"{Fore.CYAN}summary:", summary)
+
+evaluator.evaluate_application(application_ap, recruitment)
+evaluator.evaluate_application(application_jm, recruitment)
+
+best_applicants = get_best_applicants(recruitment)
+
+for applicant in best_applicants:
+    print(
+        f"{Style.BRIGHT}{Fore.CYAN}Score: {applicant.score*100}%{Style.NORMAL}, name: {applicant.full_name}"
+    )

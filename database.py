@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from sqlalchemy import (
     Engine,
     ForeignKey,
@@ -73,12 +74,25 @@ class Task(Base):
     question: Mapped[str] = mapped_column(String())
 
 
+class PersonalData(Base):
+    # CV, and required extracted data
+    __tablename__ = "personal_data"
+
+    uuid: Mapped[str] = mapped_column(primary_key=True)
+
+    full_name: Mapped[str] = mapped_column(String())
+    # find a way to store CV blobs efficiently
+    # we want to store them before and after the analysis
+
+
 class Application(Base):
     # applicant's work results
     __tablename__ = "application"
 
     uuid: Mapped[str] = mapped_column(primary_key=True)
     recruitment_uuid: Mapped[str] = mapped_column(ForeignKey("recruitment.uuid"))
+    personal_data_uuid: Mapped[str] = mapped_column(ForeignKey("personal_data.uuid"))
+    personal_data = relationship("PersonalData")
 
 
 class Evaluation(Base):
@@ -86,33 +100,22 @@ class Evaluation(Base):
     __tablename__ = "evaluation"
 
     uuid: Mapped[str] = mapped_column(primary_key=True)
-    recruitment_uuid: Mapped[str] = mapped_column(ForeignKey("dynamic_task.uuid"))
+    recruitment_uuid: Mapped[str] = mapped_column(ForeignKey("recruitment.uuid"))
+    application_uuid: Mapped[str] = mapped_column(ForeignKey("application.uuid"))
+    application = relationship("Application")
 
     # there a couple of possible approaches
     # a. checklist score system [not flexible]
     # b. relative score system [very slow]
     # c. pivot point score [improvement over b]
     # I think it's the best if we use the following system:
-    # 1: siftoff with #1
-    # 2: deeper check by #1 with thought process
+    # 1: siftoff with #a
+    # 2: deeper check by #a with thought process
     # 3: b for last candidates
-    general_summary: Mapped[str] = mapped_column(TEXT())
-    knowledge_summary: Mapped[str] = mapped_column(TEXT(), default="N/A")
-    experience_summary: Mapped[str] = mapped_column(TEXT(), default="N/A")
-    # scores better defined in evaluator.py prompts
+    # Current system:
+    # 1: score a weighted checklist and rank scores
+    general_summary: Mapped[str] = mapped_column(TEXT(), default="N/A")
     general_score: Mapped[int] = mapped_column(Integer(), default=0)
-
-
-class PersonalData(Base):
-    # CV, and required extracted data
-    __tablename__ = "personal_data"
-
-    uuid: Mapped[str] = mapped_column(primary_key=True)
-    application_uuid: Mapped[str] = mapped_column(ForeignKey("application.uuid"))
-
-    full_name: Mapped[str] = mapped_column(String())
-    # find a way to store CV blobs efficiently
-    # we want to store them before and after the analysis
 
 
 class SubmissionDynamicTask(Base):
@@ -166,10 +169,14 @@ def add_task(recruitment_uuid, question):
     return new_uuid
 
 
-def add_application(recruitment_uuid: str):
+def add_application(recruitment_uuid: str, personal_data_uuid: str):
     new_uuid = utils.gen_uuid()
     with Session(engine) as session:
-        newApplication = Application(uuid=new_uuid, recruitment_uuid=recruitment_uuid)
+        newApplication = Application(
+            uuid=new_uuid,
+            recruitment_uuid=recruitment_uuid,
+            personal_data_uuid=personal_data_uuid,
+        )
         session.add(newApplication)
         session.commit()
     return new_uuid
@@ -192,12 +199,45 @@ def add_submission(
     return new_uuid
 
 
-def add_personal_data(application_uuid: str, full_name: str):
+def add_personal_data(full_name: str):
     new_uuid = utils.gen_uuid()
     with Session(engine) as session:
-        newPersonalData = PersonalData(
-            uuid=new_uuid, application_uuid=application_uuid, full_name=full_name
-        )
+        newPersonalData = PersonalData(uuid=new_uuid, full_name=full_name)
         session.add(newPersonalData)
         session.commit()
     return new_uuid
+
+
+@dataclass
+class ApplicantPosition:
+    score: float
+    full_name: str
+    application_uuid: str
+    evaluation_uuid: str
+
+
+def get_best_applicants(recruitment_uuid: str) -> list[ApplicantPosition]:
+    with Session(engine) as session:
+        session.expire_on_commit = False
+        query = (
+            select(Evaluation)
+            .join(Evaluation.application)
+            .where(Application.recruitment_uuid == recruitment_uuid)
+            .limit(100)
+        )
+
+        top_evaluations = list(session.scalars(query).all())
+        applicant_positions = []
+        for evaluation in top_evaluations:
+            applicant_positions.append(
+                ApplicantPosition(
+                    evaluation_uuid=evaluation.uuid,
+                    application_uuid=evaluation.application_uuid,
+                    full_name=evaluation.application.personal_data.full_name,
+                    score=evaluation.general_score,
+                )
+            )
+
+        session.expunge_all()
+
+        return applicant_positions
