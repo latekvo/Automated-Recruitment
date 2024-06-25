@@ -1,4 +1,5 @@
 from sqlalchemy import (
+    Engine,
     ForeignKey,
     String,
     TEXT,
@@ -138,14 +139,18 @@ class Submission(Base):
     transcription: Mapped[str] = mapped_column(TEXT())
 
 
-engine = create_engine("sqlite://")
-Base.metadata.create_all(bind=engine)
+engine = create_engine("sqlite:///database.db")
+
+
+def init_db():
+    Base.metadata.create_all(bind=engine)
 
 
 def add_recruitment(title, company="N/A"):
     new_uuid = utils.gen_uuid()
     with Session(engine) as session:
-        insert(Task).values(uuid=new_uuid, title=title, company=company)
+        newRecruitment = Recruitment(uuid=new_uuid, title=title, company=company)
+        session.add(newRecruitment)
         session.commit()
     return new_uuid
 
@@ -153,9 +158,10 @@ def add_recruitment(title, company="N/A"):
 def add_task(recruitment_uuid, question):
     new_uuid = utils.gen_uuid()
     with Session(engine) as session:
-        insert(Task).values(
+        newTask = Task(
             uuid=new_uuid, recruitment_uuid=recruitment_uuid, question=question
         )
+        session.add(newTask)
         session.commit()
     return new_uuid
 
@@ -163,7 +169,8 @@ def add_task(recruitment_uuid, question):
 def add_application(recruitment_uuid: str):
     new_uuid = utils.gen_uuid()
     with Session(engine) as session:
-        insert(Application).values(uuid=new_uuid, recruitment_uuid=recruitment_uuid)
+        newApplication = Application(uuid=new_uuid, recruitment_uuid=recruitment_uuid)
+        session.add(newApplication)
         session.commit()
     return new_uuid
 
@@ -173,12 +180,13 @@ def add_submission(
 ):
     new_uuid = utils.gen_uuid()
     with Session(engine) as session:
-        insert(Submission).values(
+        newSubmission = Submission(
             uuid=new_uuid,
             application_uuid=application_uuid,
             task_uuid=task_uuid,
             # todo: make into a worker transcribtion queue
             transcription=get_text(filename),
         )
+        session.add(newSubmission)
         session.commit()
     return new_uuid

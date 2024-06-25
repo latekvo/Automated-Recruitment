@@ -6,7 +6,7 @@
 
 import __future__
 
-from database import engine, Evaluation
+from database import engine, Evaluation, Submission
 from sqlalchemy import (
     insert,
     select,
@@ -14,6 +14,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Session
 import utils
+from dataclasses import dataclass
 
 
 def add_shallow_evaluation_to_db(submission_uuid: str, summary: str, score: int) -> str:
@@ -27,6 +28,22 @@ def add_shallow_evaluation_to_db(submission_uuid: str, summary: str, score: int)
         )
         session.commit()
         return new_uuid
+
+
+@dataclass
+class SubmissionDetails:
+    transcription: str
+    question: str
+
+
+def get_submission_details_by_uuid(uuid: str) -> SubmissionDetails:
+    with Session(engine) as session:
+        query = select(Submission).where(Submission.uuid == uuid)
+        submission = session.scalar(query)
+        print("object:", submission)
+        return SubmissionDetails(
+            transcription=submission.transcription, question=submission.task.question
+        )
 
 
 def evaluate_submission(uuid: str):
