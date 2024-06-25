@@ -51,5 +51,5 @@ best_applicants = get_best_applicants(recruitment)
 
 for applicant in best_applicants:
     print(
-        f"{Style.BRIGHT}{Fore.CYAN}Score: {applicant.score*100}%{Style.NORMAL}, name: {applicant.full_name}"
+        f"{Style.BRIGHT}{Fore.CYAN}Score: {round(applicant.score*100, 2)}%{Style.NORMAL}, name: {applicant.full_name}"
     )

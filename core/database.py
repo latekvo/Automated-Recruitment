@@ -223,6 +223,7 @@ def get_best_applicants(recruitment_uuid: str) -> list[ApplicantPosition]:
             select(Evaluation)
             .join(Evaluation.application)
             .where(Application.recruitment_uuid == recruitment_uuid)
+            .order_by(Evaluation.general_score.desc())
             .limit(100)
         )
 
