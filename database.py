@@ -50,6 +50,7 @@ class TechnicalTask(Base):
 
 class DynamicTask(Base):
     # given a theme, this task will create a new question based on the contents of applicants CV, and or prior answers
+    # at least as many regular tasks as dynamic tasks as a fallback
     __tablename__ = "dynamic_task"
 
     uuid: Mapped[str] = mapped_column(primary_key=True)
@@ -74,6 +75,28 @@ class Application(Base):
 
     uuid: Mapped[str] = mapped_column(primary_key=True)
     recruitment_uuid: Mapped[str] = mapped_column(ForeignKey("recruitment.uuid"))
+
+
+class Evaluation(Base):
+    # applicant's work results
+    __tablename__ = "evaluation"
+
+    uuid: Mapped[str] = mapped_column(primary_key=True)
+    recruitment_uuid: Mapped[str] = mapped_column(ForeignKey("dynamic_task.uuid"))
+
+    # there a couple of possible approaches
+    # a. checklist score system [not flexible]
+    # b. relative score system [very slow]
+    # c. pivot point score [improvement over b]
+    # I think it's the best if we use the following system:
+    # 1: siftoff with #1
+    # 2: deeper check by #1 with thought process
+    # 3: b for last candidates
+    general_summary: Mapped[str] = mapped_column(TEXT())
+    knowledge_summary: Mapped[str] = mapped_column(TEXT(), default="N/A")
+    experience_summary: Mapped[str] = mapped_column(TEXT(), default="N/A")
+    # scores better defined in evaluator.py prompts
+    general_score: Mapped[int] = mapped_column(Integer(), default=0)
 
 
 class PersonalData(Base):
@@ -113,3 +136,8 @@ class Submission(Base):
 
 engine = create_engine("sqlite://")
 Base.metadata.create_all(bind=engine)
+
+
+def get_submission_by_uuid(uuid: str):
+    with Session(engine) as session:
+        session.commit()
