@@ -5,10 +5,13 @@ from sqlalchemy import (
     Integer,
     Boolean,
     create_engine,
+    insert,
     select,
     update,
 )
 from sqlalchemy.orm import Mapped, mapped_column, Session, relationship, DeclarativeBase
+import utils
+from transcriber import get_text
 
 
 class Base(DeclarativeBase):
@@ -130,6 +133,7 @@ class Submission(Base):
     uuid: Mapped[str] = mapped_column(primary_key=True)
     application_uuid: Mapped[str] = mapped_column(ForeignKey("application.uuid"))
     task_uuid: Mapped[str] = mapped_column(ForeignKey("task.uuid"))
+    task = relationship("Task")
 
     transcription: Mapped[str] = mapped_column(TEXT())
 
@@ -138,6 +142,43 @@ engine = create_engine("sqlite://")
 Base.metadata.create_all(bind=engine)
 
 
-def get_submission_by_uuid(uuid: str):
+def add_recruitment(title, company="N/A"):
+    new_uuid = utils.gen_uuid()
     with Session(engine) as session:
+        insert(Task).values(uuid=new_uuid, title=title, company=company)
         session.commit()
+    return new_uuid
+
+
+def add_task(recruitment_uuid, question):
+    new_uuid = utils.gen_uuid()
+    with Session(engine) as session:
+        insert(Task).values(
+            uuid=new_uuid, recruitment_uuid=recruitment_uuid, question=question
+        )
+        session.commit()
+    return new_uuid
+
+
+def add_application(recruitment_uuid: str):
+    new_uuid = utils.gen_uuid()
+    with Session(engine) as session:
+        insert(Application).values(uuid=new_uuid, recruitment_uuid=recruitment_uuid)
+        session.commit()
+    return new_uuid
+
+
+def add_submission(
+    application_uuid: str, task_uuid: str, filename: str = "./static/test.mov"
+):
+    new_uuid = utils.gen_uuid()
+    with Session(engine) as session:
+        insert(Submission).values(
+            uuid=new_uuid,
+            application_uuid=application_uuid,
+            task_uuid=task_uuid,
+            # todo: make into a worker transcribtion queue
+            transcription=get_text(filename),
+        )
+        session.commit()
+    return new_uuid
