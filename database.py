@@ -190,3 +190,14 @@ def add_submission(
         session.add(newSubmission)
         session.commit()
     return new_uuid
+
+
+def add_personal_data(application_uuid: str, full_name: str):
+    new_uuid = utils.gen_uuid()
+    with Session(engine) as session:
+        newPersonalData = PersonalData(
+            uuid=new_uuid, application_uuid=application_uuid, full_name=full_name
+        )
+        session.add(newPersonalData)
+        session.commit()
+    return new_uuid
