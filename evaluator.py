@@ -69,11 +69,13 @@ def evaluate_submission(question: str, transcript: str):
 
 
 def evaluate_application(
-    uuid: str, recruitment_uuid: str, add_to_db=True
+    application_uuid: str, recruitment_uuid: str, add_to_db=True
 ) -> Tuple[str, float]:
     # evaluate each submission individually
     with Session(engine) as session:
-        query = select(Submission).where(Submission.application_uuid == uuid)
+        query = select(Submission).where(
+            Submission.application_uuid == application_uuid
+        )
         applications = list(session.scalars(query).all())
         all_summaries = []
         total_score = 0
@@ -94,6 +96,7 @@ def evaluate_application(
             newEvaluation = Evaluation(
                 uuid=new_uuid,
                 recruitment_uuid=recruitment_uuid,
+                application_uuid=application_uuid,
                 general_summary=entirety_summary,
                 general_score=score_average,
             )
