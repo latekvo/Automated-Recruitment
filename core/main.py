@@ -1,5 +1,5 @@
 from colorama import Fore, Style
-from database import (
+from core.database import (
     add_application,
     add_personal_data,
     add_recruitment,
@@ -8,7 +8,7 @@ from database import (
     get_best_applicants,
     init_db,
 )
-import evaluator
+import core.evaluator as evaluator
 
 init_db()
 

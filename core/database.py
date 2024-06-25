@@ -12,8 +12,8 @@ from sqlalchemy import (
     update,
 )
 from sqlalchemy.orm import Mapped, mapped_column, Session, relationship, DeclarativeBase
-import utils
-from transcriber import get_text
+import core.utils as utils
+from core.transcriber import get_text
 
 
 class Base(DeclarativeBase):

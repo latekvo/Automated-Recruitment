@@ -7,17 +7,17 @@
 import __future__
 from typing import Tuple
 
-from database import engine, Evaluation, Submission
+from core.database import engine, Evaluation, Submission
 from sqlalchemy import (
     insert,
     select,
     update,
 )
 from sqlalchemy.orm import Session
-import utils
+import core.utils as utils
 from dataclasses import dataclass
-import evaluator_criteria
-import evaluator_general
+import core.evaluator_criteria as evaluator_criteria
+import core.evaluator_general as evaluator_general
 
 
 def add_shallow_evaluation_to_db(submission_uuid: str, summary: str, score: int) -> str:

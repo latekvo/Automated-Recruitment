@@ -29,6 +29,11 @@ def submit_answer(submission: SubmissionRequest):
     )
 
 
+@app.get("/get_question_by_task_uuid")
+def submit_answer(task_uuid: str) -> str:
+    return "Example question"
+
+
 class RecruitationScoresResponse(BaseModel):
     video: str
     question: str
