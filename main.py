@@ -13,9 +13,10 @@ application = add_application(recruitment)
 print("application", application)
 
 submission = add_submission(application, task)
-print("submission", submission)
+print("submission", submission, end="\n\n")
 
+summary, score = evaluator.evaluate_submission(submission)
+print("summary:", summary)
 
-print("details", evaluator.get_submission_details_by_uuid(submission))
-
-print("results:", evaluator.evaluate_submission(submission))
+# normal to see negatives if the AI thinks the interview is abhorrent
+print("normalized score: ", score * 100, "%", sep=None)
