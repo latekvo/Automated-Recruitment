@@ -76,7 +76,7 @@ def generate_score_for_criteria(question, transcript, criteria):
                 "criteria": criteria[0],
             }
         )
-    except OutputParserException:
+    except Exception:  # OutputParserException | ValueError
         # retry on error
         return generate_score_for_criteria(question, transcript, criteria)
 
