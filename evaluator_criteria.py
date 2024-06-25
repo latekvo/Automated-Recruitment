@@ -78,7 +78,7 @@ def generate_score_for_criteria(question, transcript, criteria):
         )
     except OutputParserException:
         # retry on error
-        generate_score_for_criteria(question, transcript, criteria)
+        return generate_score_for_criteria(question, transcript, criteria)
 
 
 def score_criteria_completeness(question: str, transcript: str) -> float:

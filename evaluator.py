@@ -48,7 +48,7 @@ def get_submission_details_by_uuid(uuid: str) -> SubmissionDetails:
         )
 
 
-def evaluate_submission(uuid: str) -> Tuple[str, float]:
+def evaluate_submission_by_uuid(uuid: str) -> Tuple[str, float]:
     # evaluate individual submission
     submission_details = get_submission_details_by_uuid(uuid)
     submission_summary = evaluator_general.generate_general_summary(
@@ -60,6 +60,31 @@ def evaluate_submission(uuid: str) -> Tuple[str, float]:
     return submission_summary, submission_score
 
 
-def evaluate_application(uuid: str):
+def evaluate_submission(question: str, transcript: str):
+    submission_summary = evaluator_general.generate_sub_summary(question, transcript)
+    submission_score = evaluator_criteria.score_criteria_completeness(
+        question, transcript
+    )
+    return submission_summary, submission_score
+
+
+def evaluate_application(uuid: str) -> Tuple[str, float]:
     # evaluate each submission individually
-    pass
+    with Session(engine) as session:
+        query = select(Submission).where(Submission.application_uuid == uuid)
+        applications = list(session.scalars(query).all())
+        all_summaries = []
+        total_score = 0
+        for application in applications:
+            summary, score = evaluate_submission(
+                application.task.question, application.transcription
+            )
+            all_summaries.append(summary)
+            total_score += score
+
+        entirety_summary = evaluator_general.summarize_list_of_sub_summaries(
+            all_summaries
+        )
+        score_average = total_score / len(applications)
+
+        return entirety_summary, score_average
