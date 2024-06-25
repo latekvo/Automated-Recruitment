@@ -52,16 +52,16 @@ output_parser = StrOutputParser()
 criteria_llm = functional_llm.with_structured_output(CriteriaEvaluationResponse)
 
 
-def score_criteria_completeness(question: str, transcript: str) -> int:
+def score_criteria_completeness(question: str, transcript: str) -> float:
     total_score = 0
     for criteria in criteria_list:
-        score = (scoring_prompt | criteria_llm).invoke(
+        response = (scoring_prompt | criteria_llm).invoke(
             {
                 "question": question,
                 "transcript": transcript,
                 "criteria": criteria[0],
             }
         )
-        total_score += score * criteria[1]
+        total_score += response.score * criteria[1]
 
     return total_score

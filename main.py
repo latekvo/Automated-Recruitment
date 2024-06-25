@@ -17,3 +17,5 @@ print("submission", submission)
 
 
 print("details", evaluator.get_submission_details_by_uuid(submission))
+
+print("results:", evaluator.evaluate_submission(submission))

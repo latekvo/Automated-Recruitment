@@ -35,7 +35,7 @@ output_parser = StrOutputParser()
 general_chain = general_summary_prompt | llm | output_parser
 
 
-def generate_general_summary(question: str, transcript: str):
+def generate_general_summary(question: str, transcript: str) -> str:
     return general_chain.invoke(
         {
             "question": question,
