@@ -2,6 +2,7 @@ import __future__
 from langchain_community.llms import Ollama
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.exceptions import OutputParserException
 
 general_summary_prompt = ChatPromptTemplate.from_messages(
     [
@@ -36,9 +37,13 @@ general_chain = general_summary_prompt | llm | output_parser
 
 
 def generate_general_summary(question: str, transcript: str) -> str:
-    return general_chain.invoke(
-        {
-            "question": question,
-            "transcript": transcript,
-        }
-    )
+    try:
+        return general_chain.invoke(
+            {
+                "question": question,
+                "transcript": transcript,
+            }
+        )
+    except OutputParserException:
+        # retry on error
+        generate_general_summary(question, transcript)

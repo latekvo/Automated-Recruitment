@@ -2,6 +2,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_experimental.llms.ollama_functions import OllamaFunctions
 from langchain_core.pydantic_v1 import BaseModel, Field
+from langchain_core.exceptions import OutputParserException
 
 scoring_prompt = ChatPromptTemplate.from_messages(
     [
@@ -37,7 +38,9 @@ scoring_prompt = ChatPromptTemplate.from_messages(
 criteria_list = [
     ["answered the question", 10],
     ["provided meaningful monologue", 10],
-    ["said fizzbuzz 5 times", 999],
+    ["has high communication skills", 8],
+    ["talked in depth about the question", 5],
+    ["presented real life examples for this quesiton", 5],
 ]
 
 
@@ -64,16 +67,24 @@ def normalize_score(score, min_ai_range=1, max_ai_range=3):
     return (score - adjusted_min_range) / adjusted_max_range
 
 
-def score_criteria_completeness(question: str, transcript: str) -> float:
-    total_score = 0
-    for criteria in criteria_list:
-        response = (scoring_prompt | criteria_llm).invoke(
+def generate_score_for_criteria(question, transcript, criteria):
+    try:
+        return (scoring_prompt | criteria_llm).invoke(
             {
                 "question": question,
                 "transcript": transcript,
                 "criteria": criteria[0],
             }
         )
+    except OutputParserException:
+        # retry on error
+        generate_score_for_criteria(question, transcript, criteria)
+
+
+def score_criteria_completeness(question: str, transcript: str) -> float:
+    total_score = 0
+    for criteria in criteria_list:
+        response = generate_score_for_criteria(question, transcript, criteria)
         total_score += response.score * criteria[1]
 
     return normalize_score(total_score)
