@@ -4,20 +4,17 @@
 # with enough data, we could use a RAG system to do initial evaluation
 # as it is done in the medical field to convert symptoms into disease classification
 
-import __future__
 from typing import Tuple
 
+from core import interview_summarizer, interview_evaluator
 from core.database import engine, Evaluation, Submission
 from sqlalchemy import (
     insert,
     select,
-    update,
 )
 from sqlalchemy.orm import Session
 import core.utils as utils
 from dataclasses import dataclass
-import core.evaluator_criteria as evaluator_criteria
-import core.evaluator_general as evaluator_general
 
 
 def add_shallow_evaluation_to_db(submission_uuid: str, summary: str, score: int) -> str:
@@ -51,18 +48,18 @@ def get_submission_details_by_uuid(uuid: str) -> SubmissionDetails:
 def evaluate_submission_by_uuid(uuid: str) -> Tuple[str, float]:
     # evaluate individual submission
     submission_details = get_submission_details_by_uuid(uuid)
-    submission_summary = evaluator_general.generate_sub_summary(
+    submission_summary = interview_summarizer.generate_sub_summary(
         submission_details.question, submission_details.transcription
     )
-    submission_score = evaluator_criteria.score_criteria_completeness(
+    submission_score = interview_evaluator.score_criteria_completeness(
         submission_details.question, submission_details.transcription
     )
     return submission_summary, submission_score
 
 
 def evaluate_submission(question: str, transcript: str):
-    submission_summary = evaluator_general.generate_sub_summary(question, transcript)
-    submission_score = evaluator_criteria.score_criteria_completeness(
+    submission_summary = interview_summarizer.generate_sub_summary(question, transcript)
+    submission_score = interview_evaluator.score_criteria_completeness(
         question, transcript
     )
     return submission_summary, submission_score
@@ -86,7 +83,7 @@ def evaluate_application(
             all_summaries.append(summary)
             total_score += score
 
-        entirety_summary = evaluator_general.summarize_list_of_sub_summaries(
+        entirety_summary = interview_summarizer.summarize_list_of_sub_summaries(
             all_summaries
         )
         score_average = total_score / len(applications)
