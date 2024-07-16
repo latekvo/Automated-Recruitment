@@ -208,6 +208,7 @@ def add_personal_data(full_name: str):
 @dataclass
 class ApplicantPosition:
     score: float
+    summary: str
     full_name: str
     application_uuid: str
     evaluation_uuid: str
@@ -233,9 +234,28 @@ def get_best_applicants(recruitment_uuid: str) -> list[ApplicantPosition]:
                     application_uuid=evaluation.application_uuid,
                     full_name=evaluation.application.personal_data.full_name,
                     score=evaluation.general_score,
+                    summary=evaluation.general_summary,
                 )
             )
 
         session.expunge_all()
 
         return applicant_positions
+
+
+def get_evaluation_by_uuid(application_uuid: str):
+    with Session(engine) as session:
+        session.expire_on_commit = False
+
+        query = (
+            select(Evaluation)
+            .join(Evaluation.application)
+            .where(Application.uuid == application_uuid)
+        )
+
+        result = session.scalars(query).one_or_none()
+
+        session.expunge_all()
+
+        return result
+
