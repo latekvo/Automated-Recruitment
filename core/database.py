@@ -1,15 +1,12 @@
 from dataclasses import dataclass
 from sqlalchemy import (
-    Engine,
     ForeignKey,
     String,
     TEXT,
     Integer,
     Boolean,
     create_engine,
-    insert,
     select,
-    update,
 )
 from sqlalchemy.orm import Mapped, mapped_column, Session, relationship, DeclarativeBase
 import core.utils as utils
@@ -152,8 +149,8 @@ def init_db():
 def add_recruitment(title, company="N/A"):
     new_uuid = utils.gen_uuid()
     with Session(engine) as session:
-        newRecruitment = Recruitment(uuid=new_uuid, title=title, company=company)
-        session.add(newRecruitment)
+        new_recruitment = Recruitment(uuid=new_uuid, title=title, company=company)
+        session.add(new_recruitment)
         session.commit()
     return new_uuid
 
@@ -161,10 +158,10 @@ def add_recruitment(title, company="N/A"):
 def add_task(recruitment_uuid, question):
     new_uuid = utils.gen_uuid()
     with Session(engine) as session:
-        newTask = Task(
+        new_task = Task(
             uuid=new_uuid, recruitment_uuid=recruitment_uuid, question=question
         )
-        session.add(newTask)
+        session.add(new_task)
         session.commit()
     return new_uuid
 
@@ -172,12 +169,12 @@ def add_task(recruitment_uuid, question):
 def add_application(recruitment_uuid: str, personal_data_uuid: str):
     new_uuid = utils.gen_uuid()
     with Session(engine) as session:
-        newApplication = Application(
+        new_application = Application(
             uuid=new_uuid,
             recruitment_uuid=recruitment_uuid,
             personal_data_uuid=personal_data_uuid,
         )
-        session.add(newApplication)
+        session.add(new_application)
         session.commit()
     return new_uuid
 
@@ -187,14 +184,14 @@ def add_submission(
 ):
     new_uuid = utils.gen_uuid()
     with Session(engine) as session:
-        newSubmission = Submission(
+        new_submission = Submission(
             uuid=new_uuid,
             application_uuid=application_uuid,
             task_uuid=task_uuid,
             # todo: make into a worker transcribtion queue
             transcription=get_text(filename),
         )
-        session.add(newSubmission)
+        session.add(new_submission)
         session.commit()
     return new_uuid
 

@@ -25,7 +25,6 @@ sub_summary_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-
 general_summary_prompt = ChatPromptTemplate.from_messages(
     [
         (
@@ -46,10 +45,8 @@ general_summary_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-
 llm = Ollama(model="mistral:7b-instruct-q4_K_S")
 output_parser = StrOutputParser()
-
 
 # pass {"transcript": str} when invoking
 sub_chain = sub_summary_prompt | llm | output_parser
@@ -65,9 +62,9 @@ def generate_sub_summary(question: str, transcript: str) -> str:
     )
 
 
-def summarize_list_of_sub_summaries(summaries: list[str]):
+def summarize_list_of_sub_summaries(summary_list: list[str]):
     joined_summaries = ""
-    for summary in summaries:
+    for summary in summary_list:
         joined_summaries += "\n---\n"
         joined_summaries += summary
 

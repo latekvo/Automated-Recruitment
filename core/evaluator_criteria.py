@@ -49,7 +49,7 @@ class CriteriaEvaluationResponse(BaseModel):
     score: float = Field(description="Score from 1 to 3", required=True)
 
 
-functional_llm = OllamaFunctions(model="mistral:7b-instruct-q4_K_S", format="json")
+functional_llm = OllamaFunctions(model="internlm2", format="json")
 output_parser = StrOutputParser()
 criteria_llm = functional_llm.with_structured_output(CriteriaEvaluationResponse)
 

@@ -51,7 +51,7 @@ def get_submission_details_by_uuid(uuid: str) -> SubmissionDetails:
 def evaluate_submission_by_uuid(uuid: str) -> Tuple[str, float]:
     # evaluate individual submission
     submission_details = get_submission_details_by_uuid(uuid)
-    submission_summary = evaluator_general.generate_general_summary(
+    submission_summary = evaluator_general.generate_sub_summary(
         submission_details.question, submission_details.transcription
     )
     submission_score = evaluator_criteria.score_criteria_completeness(
@@ -93,14 +93,14 @@ def evaluate_application(
 
         if add_to_db:
             new_uuid = utils.gen_uuid()
-            newEvaluation = Evaluation(
+            new_evaluation = Evaluation(
                 uuid=new_uuid,
                 recruitment_uuid=recruitment_uuid,
                 application_uuid=application_uuid,
                 general_summary=entirety_summary,
                 general_score=score_average,
             )
-            session.add(newEvaluation)
+            session.add(new_evaluation)
             session.commit()
 
         return entirety_summary, score_average
