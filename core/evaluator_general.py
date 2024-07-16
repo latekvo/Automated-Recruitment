@@ -1,8 +1,6 @@
-import __future__
 from langchain_community.llms import Ollama
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.exceptions import OutputParserException
 
 sub_summary_prompt = ChatPromptTemplate.from_messages(
     [

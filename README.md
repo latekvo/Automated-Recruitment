@@ -10,6 +10,4 @@ By reducing the candidate pool by 90%, we can extract those, who are worth revie
 
 ### Running:
 
-Backend server: `fastapi dev server.py`
-Frontend dev server: `npm run dev`
-Standalone demonstration: `python core/main.py`
+Standalone demonstration: `python test.py`

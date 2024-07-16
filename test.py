@@ -30,7 +30,7 @@ task_coworker = add_task(
     "Describe a situation where you had to work with a difficult team member.",
 )
 
-video_dir = "../static/"
+video_dir = "./static/"
 
 arthur_powell = add_personal_data("Arthur Powell")
 application_ap = add_application(recruitment, arthur_powell)
