@@ -11,3 +11,21 @@ By reducing the candidate pool by 90%, we can extract those, who are worth revie
 ### Running:
 
 Standalone demonstration: `python test.py`
+
+---
+### Clauses:
+
+This software is provided under Apache 2 license.
+
+For further details, see attached "LICENSE" file.
+
+```commandline
+Some of the template files are provided thanks to https://resumeworded.com/
+
+None of the provided sample files are a part of this software, 
+and are only provided as a supplementary reference data.
+None of the provided sample files are of completely original production.
+I do not claim the ownership of the provided data samples.
+```
+
+#### Except as represented in this agreement, all work product by Developer is provided ​“AS IS”. Other than as provided in this agreement, Developer makes no other warranties, express or implied, and hereby disclaims all implied warranties, including any warranty of merchantability and warranty of fitness for a particular purpose.
