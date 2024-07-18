@@ -8,6 +8,11 @@ Current candidate pool is littered with spam.
 This is caused by over-reliance on CVs and other market factors, which can be mitigated by introducing novel assessment methods.
 By reducing the candidate pool by 90%, we can extract those, who are worth reviewing manually, and automatically but organically reject those, who wouldn't meet skill expectations otherwise.
 
+### Requirements
+
+- Make sure to have tesseract ocr command line utility installed on you machine.
+- Use provided conda environment to download all required packages.
+
 ### Running:
 
 Standalone demonstration: `python test.py`

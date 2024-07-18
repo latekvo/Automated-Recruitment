@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+from unstructured.partition.auto import partition
+from unstructured.partition.utils.constants import PartitionStrategy
+
 
 # Data of each candidate:
 #     - most the details are on the CV
@@ -28,6 +31,7 @@ class ExtractedInstitution:
     name: str
     fields: list[str]
     note: str
+
 
 @dataclass
 class ExtractedDegree:
@@ -87,9 +91,45 @@ class StructuredCV:
     other_poi: list[ExtractedOtherSearchable]
 
 
-def read_cv():
-    # convert cv into a well-structured document
+def back_propagate_project(cv: StructuredCV, project: ExtractedProject):
+    # extract data from private projects to fill additional cv data fields
     pass
+
+
+def back_propagate_degree(cv: StructuredCV, institution: ExtractedInstitution, degree: ExtractedDegree):
+    # extract data from educational institution to fill additional cv data fields
+    pass
+
+
+def back_propagate_role(cv: StructuredCV, workplace: ExtractedWorkplace, role: ExtractedRole):
+    # extract data from professional experience to fill additional cv data fields
+    pass
+
+
+def back_propagate_social_profile(cv: StructuredCV, social_profile: ExtractedWebsite):
+    # extract data from socials to fill additional cv data fields
+    pass
+
+
+def back_propagate_website(cv: StructuredCV, website: ExtractedWebsite):
+    # extract data from website to fill additional cv data fields
+    pass
+
+
+def back_propagate_other_searchable(cv: StructuredCV, website: ExtractedWebsite):
+    # extract data from other POIs to fill additional cv data fields
+    pass
+
+
+def read_cv_from_file():
+    # convert cv into a well-structured text blob
+    pass
+
+
+def read_cv_from_path(cv_path):
+    # convert cv into a well-structured document
+    elements = partition(filename=cv_path, content_type="application/pdf", strategy=PartitionStrategy.OCR_ONLY)
+    print("\n\n".join([str(el) for el in elements]))
 
 
 def split_cv():
@@ -97,8 +137,9 @@ def split_cv():
     pass
 
 
-def serialize_cv():
-    # compose gathered points of interest
+def section_classifier():
+    # classify what kind of section the provided chunk of text is
+    # input can be either education, project, experience etc
     pass
 
 
