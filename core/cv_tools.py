@@ -7,7 +7,15 @@ from unstructured.partition.utils.constants import PartitionStrategy
 from unstructured.cleaners.core import group_broken_paragraphs
 from unstructured.cleaners.core import clean
 
-from core.cv_structures import StructuredCV
+from core.cv_extractors import (
+    extract_education,
+    extract_commercial_experience,
+    extract_private_experience,
+    extract_searchable_data,
+    extract_social_profiles,
+    extract_websites,
+)
+from core.cv_structures import StructuredCV, SectionsEnum
 
 
 def read_cv_from_file():
@@ -39,7 +47,7 @@ def read_cv_from_path(cv_path: str) -> list[str]:
     return clean_elements
 
 
-def detect_header() -> None | Literal["work", "education", "project"]:
+def detect_header() -> SectionsEnum:
     # check if chunk of text is a header or not
     pass
 
@@ -49,7 +57,9 @@ def verify_content_positioning() -> bool:
     pass
 
 
-def regroup_cv(text_chunks: list[str]) -> list[str]:
+def regroup_cv(
+    text_chunks: list[str],
+) -> list[[SectionsEnum, str]]:
     # group extracted CV slices into better-organised fragments
     # coagulate chunks until a header is encountered
     # with each coagulation, also check if the text chunk belongs to the current section
@@ -66,7 +76,32 @@ def regroup_cv(text_chunks: list[str]) -> list[str]:
 
 
 def process_cv(cv_path: str) -> StructuredCV:
+    extracted_cv = StructuredCV(
+        full_name="N/A",
+        commercial_experience=[],
+        private_experience=[],
+        degrees=[],
+        socials=[],
+        websites=[],
+        other_poi=[],
+    )
+
     raw_cv_chunks = read_cv_from_path(cv_path)
     grouped_chunks = regroup_cv(raw_cv_chunks)
+    for chunk in grouped_chunks:
+        section, text = chunk
 
-    pass
+        if section == "work":
+            extracted_cv.commercial_experience += extract_commercial_experience(text)
+        if section == "project":
+            extracted_cv.private_experience += extract_private_experience(text)
+        if section == "education":
+            extracted_cv.degrees += extract_education(text)
+        if section == "socials":
+            extracted_cv.socials += extract_social_profiles(text)
+        if section == "websites":
+            extracted_cv.websites += extract_websites(text)
+        if section == "other_poi":
+            extracted_cv.other_poi += extract_searchable_data(text)
+
+    return extracted_cv

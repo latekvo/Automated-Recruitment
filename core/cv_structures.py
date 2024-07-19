@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Literal, Optional
 
 from langchain_core.pydantic_v1 import BaseModel, Field
 
@@ -111,3 +112,8 @@ class StructuredCV:
     websites: list[ExtractedWebsite]
     socials: list[ExtractedSocialProfile]
     other_poi: list[ExtractedOtherSearchable]
+
+
+SectionsEnum = Optional[
+    Literal["name", "work", "project", "education", "websites", "socials", "other_poi"]
+]
