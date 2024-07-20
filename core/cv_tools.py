@@ -76,15 +76,7 @@ def regroup_cv(
 
 
 def process_cv(cv_path: str) -> StructuredCV:
-    extracted_cv = StructuredCV(
-        full_name="N/A",
-        commercial_experience=[],
-        private_experience=[],
-        degrees=[],
-        socials=[],
-        websites=[],
-        other_poi=[],
-    )
+    extracted_cv = StructuredCV()
 
     raw_cv_chunks = read_cv_from_path(cv_path)
     grouped_chunks = regroup_cv(raw_cv_chunks)

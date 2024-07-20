@@ -4,9 +4,9 @@ from typing import Literal, Optional
 from langchain_core.pydantic_v1 import BaseModel, Field
 
 
-@dataclass
 class ExtractedProject(BaseModel):
-    # scan for originality, technologies and scope of project
+    """Extracted private non-commercial project."""
+
     title: str = Field(description="Project title", required=True)
     code_links: list[str] = Field(
         description="Links to project's codebase", required=False
@@ -22,11 +22,9 @@ class ExtractedProject(BaseModel):
     )
 
 
-@dataclass
 class ExtractedInstitution(BaseModel):
-    # scan for technologies and broad quality
-    # asking the latest flagship models directly with no further research
-    # will yield good enough results for most recognized facilities
+    """Extracted educational institution."""
+
     name: str = Field(
         description="Name of the educational institution (e.g. Massachusetts Institute of Technology)",
         required=True,
@@ -41,8 +39,9 @@ class ExtractedInstitution(BaseModel):
     )
 
 
-@dataclass
 class ExtractedDegree(BaseModel):
+    """Extracted college degree."""
+
     title: str = Field(
         description="Degree title (e.g. Master of AI Engineering)", required=True
     )
@@ -55,11 +54,9 @@ class ExtractedDegree(BaseModel):
     )
 
 
-@dataclass
 class ExtractedWorkplace(BaseModel):
-    # scan for technologies and area operand
-    # asking the latest flagship models directly with no further research
-    # will yield good enough results for most recognized employers
+    """Extracted workplace."""
+
     name: str = Field(description="Company's name", required=True)
     sector: str = Field(
         description="Company's area of operation (IT, Equity, etc.)", required=True
@@ -67,8 +64,9 @@ class ExtractedWorkplace(BaseModel):
     size: int = Field(description="Approximate company size", required=False)
 
 
-@dataclass
 class ExtractedRole(BaseModel):
+    """Extracted job position and role."""
+
     title: str = Field(
         description="Job role title (e.g. Senior Software Engineer)", required=True
     )
@@ -80,38 +78,38 @@ class ExtractedRole(BaseModel):
     )
 
 
-@dataclass
 class ExtractedSocialProfile(BaseModel):
+    """Extracted social account."""
+
     # use to gather details
     full_url: str = Field(description="Entire extracted URL", required=True)
 
 
-@dataclass
 class ExtractedWebsite(BaseModel):
+    """Extracted personal website."""
+
     # scan for technologies and originality
     url: str = Field(description="Website's full url", required=True)
     is_owner: bool = Field(description="Is this a personal website?", required=False)
 
 
-@dataclass
 class ExtractedOtherSearchable(BaseModel):
-    # document other points of interest not yet covered by the algo
+    """Other extracted data which could be useful."""
+
     title: str = Field(description="Point of interest title", required=True)
     data: list[str] = Field(
         description="Data relevant to this point of interest", required=True
     )
 
 
-@dataclass
 class StructuredCV:
-    # a flattened dataset of the above data, complete with the original file, sources etc.
-    full_name: str
-    commercial_experience: list[ExtractedRole]
-    private_experience: list[ExtractedProject]
-    degrees: list[ExtractedDegree]
-    websites: list[ExtractedWebsite]
-    socials: list[ExtractedSocialProfile]
-    other_poi: list[ExtractedOtherSearchable]
+    full_name: str = "N/A"
+    commercial_experience: list[ExtractedRole] = []
+    private_experience: list[ExtractedProject] = []
+    degrees: list[ExtractedDegree] = []
+    websites: list[ExtractedWebsite] = []
+    socials: list[ExtractedSocialProfile] = []
+    other_poi: list[ExtractedOtherSearchable] = []
 
 
 SectionsEnum = Optional[
