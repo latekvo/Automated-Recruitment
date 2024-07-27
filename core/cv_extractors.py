@@ -1,5 +1,4 @@
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_experimental.llms.ollama_functions import OllamaFunctions
 
 from core.cv_structures import (
     ExtractedProject,
@@ -9,6 +8,7 @@ from core.cv_structures import (
     ExtractedSocialProfile,
     ExtractedOtherSearchable,
 )
+from core.llm_loader import get_llm
 
 extraction_prompt = ChatPromptTemplate.from_messages(
     [
@@ -27,7 +27,7 @@ extraction_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-functional_llm = OllamaFunctions(model="internlm2", format="json")
+functional_llm = get_llm()
 
 # Either:
 # - ai regroups chunks of text into structured list jsons

@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Literal, Optional
 
 from langchain_core.pydantic_v1 import BaseModel, Field
