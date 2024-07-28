@@ -1,4 +1,5 @@
 import os
+import getpass
 
 from langchain_experimental.llms.ollama_functions import OllamaFunctions
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -13,19 +14,13 @@ class Models(Enum):
 model = Models.GOOGLE
 
 
-def get_key():
-    if model == Models.GOOGLE:
-        api_key = os.environ["GOOGLE_API_KEY"]
-    elif model == Models.OLLAMA:
-        api_key = None
-    else:
-        api_key = None
-
-    return api_key
-
-
 def get_llm():
     if model == Models.GOOGLE:
+        if "GOOGLE_API_KEY" not in os.environ:
+            os.environ["GOOGLE_API_KEY"] = getpass.getpass(
+                "Provide your Google API Key"
+            )
+
         return ChatGoogleGenerativeAI(model=Models.GOOGLE)
     elif model == Models.OLLAMA:
         return OllamaFunctions(model=Models.OLLAMA, format="json")
