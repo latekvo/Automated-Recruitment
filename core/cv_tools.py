@@ -17,19 +17,15 @@ from core.cv_extractors import (
 )
 from core.cv_structures import (
     StructuredCV,
-    SectionsEnum,
-    extraction_prompt,
+    ClassifiedChunkList,
+    classification_prompt,
 )
 from core.llm_loader import get_llm
-
-
-def read_cv_from_file():
-    # convert cv into a well-structured text blob
-    pass
+from core.utils import ensure_workflow_output
 
 
 def read_cv_from_path(cv_path: str) -> list[str]:
-    # convert cv into a well-structured document
+    # convert cv into raw chunks of text
     elements = partition(
         filename=cv_path,
         content_type="application/pdf",
@@ -77,13 +73,13 @@ def classify_chunk(text: str) -> DeterminedClassification:
     # check if chunk of text is a header or not
     classification_llm = get_llm()
     structured_llm = classification_llm.with_structured_output(DeterminedClassification)
-    workflow = extraction_prompt | structured_llm
-    return workflow.invoke(text)
+    workflow = classification_prompt | structured_llm
+    return ensure_workflow_output(workflow, {"data": text})
 
 
-def regroup_cv(
+def classify_cv_chunks(
     text_chunks: list[str],
-) -> list[[SectionsEnum, str]]:
+) -> ClassifiedChunkList:
     # group extracted CV slices into labeled fragments
     # todo better approach: 5-long chunks with overlap
 
@@ -97,7 +93,7 @@ def regroup_cv(
             grouped_chunks += []
         grouped_chunks[-1] += chunk
 
-    classified_chunks: list[[SectionsEnum, str]] = []
+    classified_chunks: ClassifiedChunkList = []
 
     for grouped_chunk in grouped_chunks:
         classification = classify_chunk("\n".join(grouped_chunk))
@@ -142,7 +138,7 @@ def process_cv(cv_path: str) -> StructuredCV:
     extracted_cv = StructuredCV()
 
     raw_cv_chunks = read_cv_from_path(cv_path)
-    grouped_chunks = regroup_cv(raw_cv_chunks)
+    grouped_chunks = classify_cv_chunks(raw_cv_chunks)
     for chunk in grouped_chunks:
         section, text = chunk
 

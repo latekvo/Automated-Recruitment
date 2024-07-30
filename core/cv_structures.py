@@ -124,6 +124,8 @@ SectionsEnum = Optional[
     ]
 ]
 
+ClassifiedChunkList = list[[SectionsEnum, str]]
+
 available_categories = [
     "private_details",
     "work",

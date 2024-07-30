@@ -1,24 +1,12 @@
-from core.cv_extractors import (
-    extract_education,
-    extract_commercial_experience,
-    extract_social_profiles,
-    extract_searchable_data,
-)
-from core.cv_tools import read_cv_from_path
+from core.cv_structures import ClassifiedChunkList
+from core.cv_tools import read_cv_from_path, classify_cv_chunks
+from core.cv_extractors import extract_commercial_experience
+
 
 # read CV
 raw_cv = read_cv_from_path("static/senior-software-developer.pdf")
 
 print("\n\n".join([str(el) for el in raw_cv]))
-
-skills_sample = """skills _______________________________________________________________________________________________________________
-hard skills: prioritization (advanced), looker (experienced), segment, amplitude, user documentation. techniques: jira, pendo, rubicon (advanced), doubleclick, liverail, visio, javascript, html, codeigniter
-"""
-
-education_sample = """education _______________________________________________________________________________________________________________
-resume worded university, new york, ny master of science — computer science
-06/2005
-"""
 
 professional_sample = """work experience _______________________________________________________________________________________________________________
 senior software developer
@@ -29,18 +17,10 @@ polyhire, london, united kingdom nyse listed recruitment and employer branding c
 12/2012 08/2015
 """
 
-details_sample = """
-first last senior software developer olympia, washington • +1 234 456 789 • professionalemail@resumeworded.com • linkedin.com/in/username
-"""
-
-print("\n\n\n---\n\n\n")
-
-# extractors unit tests
-print("education:")
-print(extract_education(education_sample))
 print("commercial experience:")
 print(extract_commercial_experience(professional_sample))
-print("social accounts:")
-print(extract_social_profiles(details_sample))
-print("other data:")
-print(extract_searchable_data(skills_sample))
+
+classified_cv_chunks: ClassifiedChunkList = classify_cv_chunks(raw_cv)
+
+for chunk in classified_cv_chunks:
+    print(chunk[0], "|", chunk[1])
