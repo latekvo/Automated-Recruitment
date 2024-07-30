@@ -1,5 +1,6 @@
 from typing import Literal, Optional
 
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 
 
@@ -112,5 +113,62 @@ class StructuredCV:
 
 
 SectionsEnum = Optional[
-    Literal["name", "work", "project", "education", "websites", "socials", "other_poi"]
+    Literal[
+        "private_details",
+        "work",
+        "project",
+        "education",
+        "websites",
+        "socials",
+        "other_poi",
+    ]
 ]
+
+available_categories = [
+    "private_details",
+    "work",
+    "project",
+    "education",
+    "socials",
+    "websites",
+    "other_poi",
+]
+
+concatenated_categories = "\n".join(
+    ["- " + category for category in available_categories]
+)
+
+
+extraction_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "you are data extractor. "
+            "you are provided with distinct sections of CVs, "
+            "you are to extract the specified data out of them. "
+            "you are provided with a clear task and topic, "
+            "your job is to strictly follow the instructions. ",
+        ),
+        (
+            "user",
+            "Current section: ```{section}``` Data: ```{data}```",
+        ),
+    ]
+)
+
+classification_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "you are data classifier. "
+            "you are provided with unknown sections of CVs, "
+            "you are to determine the category of those sections. "
+            "your job is to strictly follow the instructions. "
+            "here are the available categories:\n" + concatenated_categories,
+        ),
+        (
+            "user",
+            "Chunk: ```{data}```",
+        ),
+    ]
+)

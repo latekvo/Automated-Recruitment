@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal
+from langchain_core.pydantic_v1 import BaseModel, Field
 
 from unstructured.partition.auto import partition
 from unstructured.partition.utils.constants import PartitionStrategy
@@ -15,7 +15,12 @@ from core.cv_extractors import (
     extract_social_profiles,
     extract_websites,
 )
-from core.cv_structures import StructuredCV, SectionsEnum
+from core.cv_structures import (
+    StructuredCV,
+    SectionsEnum,
+    extraction_prompt,
+)
+from core.llm_loader import get_llm
 
 
 def read_cv_from_file():
@@ -47,32 +52,90 @@ def read_cv_from_path(cv_path: str) -> list[str]:
     return clean_elements
 
 
-def detect_header() -> SectionsEnum:
+class DeterminedClassification(BaseModel):
+    """Classification of a chunks into CV categories."""
+
+    category: bool = Field(
+        description=(
+            "The CV category to which the text belongs. "
+            "If provided text intersects 2 categories, select the first one."
+        ),
+        required=False,  # couldn't determine and that's normal
+        default=None,
+    )
+    second_category: bool = Field(
+        description=(
+            "When 2 categories appear to be present in provided chunk of text, select the second one. "
+            "Otherwise, leave empty. "
+        ),
+        required=False,
+        default=None,
+    )
+
+
+def classify_chunk(text: str) -> DeterminedClassification:
     # check if chunk of text is a header or not
-    pass
-
-
-def verify_content_positioning() -> bool:
-    # check if chunk of text belongs to the current section
-    pass
+    classification_llm = get_llm()
+    structured_llm = classification_llm.with_structured_output(DeterminedClassification)
+    workflow = extraction_prompt | structured_llm
+    return workflow.invoke(text)
 
 
 def regroup_cv(
     text_chunks: list[str],
 ) -> list[[SectionsEnum, str]]:
-    # group extracted CV slices into better-organised fragments
-    # coagulate chunks until a header is encountered
-    # with each coagulation, also check if the text chunk belongs to the current section
-    pass
+    # group extracted CV slices into labeled fragments
+    # todo better approach: 5-long chunks with overlap
+
+    grouped_chunks: list[list[str]] = [[]]
+    chunk_grouping_amount = 3
+
+    # regroup all chunks into larger segments,
+    # single entry frequently spans across multiple lines
+    for chunk in text_chunks:
+        if len(grouped_chunks[-1]) == chunk_grouping_amount:
+            grouped_chunks += []
+        grouped_chunks[-1] += chunk
+
+    classified_chunks: list[[SectionsEnum, str]] = []
+
+    for grouped_chunk in grouped_chunks:
+        classification = classify_chunk("\n".join(grouped_chunk))
+
+        # no classification
+        if classification.category is None:
+            continue
+
+        # simple classification
+        if classification.second_category is None:
+            for chunk in grouped_chunk:
+                classified_chunks += [classification.category, chunk]
+
+        # double-category, classify each line individually
+        chunk_iterator = 0
+        for chunk in grouped_chunk:
+            sub_classification = classify_chunk(chunk)
+            category = sub_classification.category
+
+            # if category couldn't be found,
+            # classify it as the closest primary category
+            if category is None:
+                if chunk_iterator < chunk_grouping_amount / 2:
+                    category = classification.category
+                else:
+                    category = classification.second_category
+
+            classified_chunks += [category, chunk]
+            chunk_iterator += 1
+
+            continue
+
+    return classified_chunks
 
 
-# couple different approaches for section classification are feasible
-# - use AI to split into large sections: EXPERIENCE, EDUCATION ETC
-#   this would allow us to split the entire document by just detecting headers
-#   we would then have to split the individual entries into each section
-# - use AI to sort each individual entry into appropriate section
-#   simpler, but likely more lossy, as less context is being used
-# I'm going with the first one, but will see where it goes in the coming commits
+# Splitting approaches:
+# - divide cv into entries, ask AI what kind of entry it is, they'll usually be grouped closely
+# - divide cv into sections, then feed entire sections to AI
 
 
 def process_cv(cv_path: str) -> StructuredCV:

@@ -1,5 +1,3 @@
-from langchain_core.prompts import ChatPromptTemplate
-
 from core.cv_structures import (
     ExtractedProject,
     ExtractedDegree,
@@ -7,25 +5,9 @@ from core.cv_structures import (
     ExtractedWebsite,
     ExtractedSocialProfile,
     ExtractedOtherSearchable,
+    extraction_prompt,
 )
 from core.llm_loader import get_llm
-
-extraction_prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            "system",
-            "You are data extractor. "
-            "You are provided with distinct sections of CVs, "
-            "you are to extract the specified data out of them. "
-            "You are provided with a clear task and topic, "
-            "your job is to strictly follow the instructions. ",
-        ),
-        (
-            "user",
-            "Current section: ```{section}``` Data: ```{data}```",
-        ),
-    ]
-)
 
 functional_llm = get_llm()
 

@@ -7,11 +7,11 @@ from enum import Enum
 
 
 class Models(Enum):
-    GOOGLE = "gemini-pro"
+    GOOGLE = "gemini-1.5-flash"
     OLLAMA = "internlm2"
 
 
-model = Models.GOOGLE
+model = Models.OLLAMA
 
 
 def get_llm():
@@ -21,8 +21,8 @@ def get_llm():
                 "Provide your Google API Key"
             )
 
-        return ChatGoogleGenerativeAI(model=Models.GOOGLE)
+        return ChatGoogleGenerativeAI(model=model.value)
     elif model == Models.OLLAMA:
-        return OllamaFunctions(model=Models.OLLAMA, format="json")
+        return OllamaFunctions(model=model.value, format="json")
     else:
         raise Exception
