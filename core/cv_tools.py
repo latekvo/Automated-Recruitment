@@ -81,21 +81,32 @@ def classify_cv_chunks(
     text_chunks: list[str],
 ) -> ClassifiedChunkList:
     # group extracted CV slices into labeled fragments
-    # todo better approach: 5-long chunks with overlap
+    # FIXME [!!!]: after running this once, we need a much more efficient approach
+    # took over an hour so far for one CV and still hasn't finished
+    # approaches from fastest to slowest, accuracy inversely proportional:
+    # - one pass extraction of everything
+    # - extract every category aspect every pass
+    # - identify section positions in one pass, the extract each section individually
+    # the last approach looks the best, we can number every single line and then ask one ai for ranges
+    # this wouldn't require restructuring the rest of my code
 
     grouped_chunks: list[list[str]] = [[]]
-    chunk_grouping_amount = 3
+    chunk_grouping_amount = 5
 
     # regroup all chunks into larger segments,
     # single entry frequently spans across multiple lines
     for chunk in text_chunks:
-        if len(grouped_chunks[-1]) == chunk_grouping_amount:
-            grouped_chunks += []
-        grouped_chunks[-1] += chunk
+        if len(grouped_chunks[-1]) >= chunk_grouping_amount:
+            grouped_chunks.append([])
+
+        grouped_chunks[-1].append(chunk)
 
     classified_chunks: ClassifiedChunkList = []
 
     for grouped_chunk in grouped_chunks:
+        print(
+            f"classification progress: {len(classified_chunks)}/{len(grouped_chunks)}"
+        )
         classification = classify_chunk("\n".join(grouped_chunk))
 
         # no classification
@@ -105,7 +116,7 @@ def classify_cv_chunks(
         # simple classification
         if classification.second_category is None:
             for chunk in grouped_chunk:
-                classified_chunks += [classification.category, chunk]
+                classified_chunks.append([classification.category, chunk])
 
         # double-category, classify each line individually
         chunk_iterator = 0
@@ -121,12 +132,25 @@ def classify_cv_chunks(
                 else:
                     category = classification.second_category
 
-            classified_chunks += [category, chunk]
+            classified_chunks.append([category, chunk])
             chunk_iterator += 1
 
             continue
 
     return classified_chunks
+
+
+def coagulate_cv_chunks(classified_chunks: ClassifiedChunkList) -> ClassifiedChunkList:
+    coagulated_list: ClassifiedChunkList = []
+    previous_classification = None
+
+    for chunk in classified_chunks:
+        if chunk[0] != previous_classification:
+            coagulated_list.append([chunk[0], ""])
+            previous_classification = chunk[0]
+        coagulated_list[-1].append(chunk[1])
+
+    return coagulated_list
 
 
 # Splitting approaches:

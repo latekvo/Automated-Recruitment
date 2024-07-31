@@ -6,6 +6,8 @@ from core.cv_structures import (
     ExtractedSocialProfile,
     ExtractedOtherSearchable,
     extraction_prompt,
+    ClassifiedChunkList,
+    SectionsEnum,
 )
 from core.llm_loader import get_llm
 
@@ -61,3 +63,31 @@ def extract_searchable_data(text: str) -> ExtractedOtherSearchable:
     workflow = extraction_prompt | structured_llm
     result = workflow.invoke({"data": text, "section": "searchable_data"})
     return result
+
+
+def extract_from_classified_list(classified_chunks: ClassifiedChunkList):
+    converted_chunks: list[[SectionsEnum, any]] = []
+
+    for chunk in classified_chunks:
+        classification: SectionsEnum = chunk[0]
+        raw_data: str = chunk[1]
+        extracted_data = None
+
+        if classification == "private_details":
+            extracted_data = "N/A"
+        elif classification == "work":
+            extracted_data = extract_commercial_experience(raw_data)
+        elif classification == "project":
+            extracted_data = extract_private_experience(raw_data)
+        elif classification == "education":
+            extracted_data = extract_education(raw_data)
+        elif classification == "socials":
+            extracted_data = extract_social_profiles(raw_data)
+        elif classification == "websites":
+            extracted_data = extract_websites(raw_data)
+        elif classification == "other_poi":
+            extracted_data = extract_searchable_data(raw_data)
+
+        converted_chunks.append([classification, extracted_data])
+
+    return converted_chunks

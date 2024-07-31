@@ -11,9 +11,10 @@ def gen_time() -> int:
     return math.floor(datetime.datetime.utcnow().timestamp())
 
 
-def ensure_workflow_output(workflow, data, max_iterations=8):
+def ensure_workflow_output(workflow, data, max_iterations=1):
     if max_iterations == 0:
-        raise ValueError("Retried excessively, try different model")
+        print("WARN: Exceeded retries limit but continuing. DATA:", data)
+        # raise ValueError("Retried excessively, try different model")
     # llm output may throw errors when it fails at the structure check stage
     try:
         return workflow.invoke(data)
