@@ -8,7 +8,7 @@ from enum import Enum
 
 class Models(Enum):
     GOOGLE = "gemini-1.5-flash"
-    OLLAMA = "mistral:7b-instruct-v0.3-q4_K_S"  # tool-calling LLM
+    OLLAMA = "mistral:7b-instruct-v0.3-q4_K_S"  # "gemma2:2b-instruct-q6_K"
 
 
 model = Models.OLLAMA

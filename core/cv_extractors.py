@@ -8,6 +8,7 @@ from core.cv_structures import (
     extraction_prompt,
     ClassifiedChunkList,
     SectionsEnum,
+    ExtractedStructuredCV,
 )
 from core.llm_loader import get_llm
 
@@ -91,3 +92,11 @@ def extract_from_classified_list(classified_chunks: ClassifiedChunkList):
         converted_chunks.append([classification, extracted_data])
 
     return converted_chunks
+
+
+def extract_entire_cv(raw_chunks: list[str]):
+    text = "\n".join(raw_chunks)
+    structured_llm = functional_llm.with_structured_output(ExtractedStructuredCV)
+    workflow = extraction_prompt | structured_llm
+    result = workflow.invoke({"data": text, "section": "searchable_data"})
+    return result

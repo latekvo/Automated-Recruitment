@@ -102,6 +102,36 @@ class ExtractedOtherSearchable(BaseModel):
     )
 
 
+class ExtractedStructuredCV(BaseModel):
+    """Complete CV structure"""
+
+    full_name: str = Field(title="Full candidate's name", default=[])
+    commercial_experience: list[str] = Field(
+        title="Commercial experience",
+        description="Experience attained in a commercial, professional environment",
+        default=[],
+    )
+    private_experience: list[str] = Field(
+        title="Private experience",
+        description="Experience attained in a non-commercial, private project",
+        default=[],
+    )
+    degrees: list[str] = Field(
+        title="Education", description="A single degree or an institution", default=[]
+    )
+    websites: list[str] = Field(title="Personal websites", default=[])
+    socials: list[str] = Field(
+        title="Social media",
+        description="Social media records like linkedin or twitter",
+        default=[],
+    )
+    other_poi: list[str] = Field(
+        title="Other interesting points, skills, links or traits",
+        description="",
+        default=[],
+    )
+
+
 class StructuredCV:
     full_name: str = "N/A"
     commercial_experience: list[ExtractedRole] = []
