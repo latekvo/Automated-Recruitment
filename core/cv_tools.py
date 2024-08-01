@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from warnings import deprecated
+
 from langchain_core.pydantic_v1 import BaseModel, Field
 
 from unstructured.partition.auto import partition
@@ -69,6 +71,7 @@ class DeterminedClassification(BaseModel):
     )
 
 
+@deprecated("This function has been deprecated, use extract_cv_entries() instead.")
 def classify_chunk(text: str) -> DeterminedClassification:
     # check if chunk of text is a header or not
     classification_llm = get_llm()
@@ -77,6 +80,7 @@ def classify_chunk(text: str) -> DeterminedClassification:
     return ensure_workflow_output(workflow, {"data": text})
 
 
+@deprecated("This function has been deprecated, use extract_cv_entries() instead.")
 def classify_cv_chunks(
     text_chunks: list[str],
 ) -> ClassifiedChunkList:
@@ -140,6 +144,7 @@ def classify_cv_chunks(
     return classified_chunks
 
 
+@deprecated("This function has been deprecated, use extract_cv_entries() instead.")
 def coagulate_cv_chunks(classified_chunks: ClassifiedChunkList) -> ClassifiedChunkList:
     coagulated_list: ClassifiedChunkList = []
     previous_classification = None
@@ -158,6 +163,7 @@ def coagulate_cv_chunks(classified_chunks: ClassifiedChunkList) -> ClassifiedChu
 # - divide cv into sections, then feed entire sections to AI
 
 
+@deprecated("This function has been deprecated, use extract_cv_entries() instead.")
 def process_cv(cv_path: str) -> StructuredCV:
     extracted_cv = StructuredCV()
 

@@ -94,7 +94,7 @@ def extract_from_classified_list(classified_chunks: ClassifiedChunkList):
     return converted_chunks
 
 
-def extract_entire_cv(raw_chunks: list[str]):
+def extract_cv_entries(raw_chunks: list[str]):
     text = "\n".join(raw_chunks)
     structured_llm = functional_llm.with_structured_output(ExtractedStructuredCV)
     workflow = extraction_prompt | structured_llm

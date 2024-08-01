@@ -103,7 +103,7 @@ class ExtractedOtherSearchable(BaseModel):
 
 
 class ExtractedStructuredCV(BaseModel):
-    """Complete CV structure"""
+    """Structured CV entries"""
 
     full_name: str = Field(title="Full candidate's name", default=[])
     commercial_experience: list[str] = Field(
