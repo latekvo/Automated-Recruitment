@@ -6,22 +6,12 @@ from core.cv_structures import (
     ExtractedSocialProfile,
     ExtractedOtherSearchable,
     extraction_prompt,
-    ClassifiedChunkList,
-    SectionsEnum,
-    ExtractedStructuredCV,
+    ExtractedCV,
+    StructuredCV,
 )
 from core.llm_loader import get_llm
 
 functional_llm = get_llm()
-
-# Either:
-# - ai regroups chunks of text into structured list jsons
-# or
-# - ai extracts single entries
-#
-# the former will be much easier to implement, as no need for entry splitting will be necessary
-
-# in all of the following cases, text is guaranteed to provide the extraction goal
 
 
 def extract_education(text: str) -> ExtractedDegree:
@@ -66,37 +56,35 @@ def extract_searchable_data(text: str) -> ExtractedOtherSearchable:
     return result
 
 
-def extract_from_classified_list(classified_chunks: ClassifiedChunkList):
-    converted_chunks: list[[SectionsEnum, any]] = []
+def extracted_to_structured_cv(extracted_cv: ExtractedCV) -> StructuredCV:
+    structured_cv = StructuredCV()
 
-    for chunk in classified_chunks:
-        classification: SectionsEnum = chunk[0]
-        raw_data: str = chunk[1]
-        extracted_data = None
+    structured_cv.full_name = extracted_cv.full_name
 
-        if classification == "private_details":
-            extracted_data = "N/A"
-        elif classification == "work":
-            extracted_data = extract_commercial_experience(raw_data)
-        elif classification == "project":
-            extracted_data = extract_private_experience(raw_data)
-        elif classification == "education":
-            extracted_data = extract_education(raw_data)
-        elif classification == "socials":
-            extracted_data = extract_social_profiles(raw_data)
-        elif classification == "websites":
-            extracted_data = extract_websites(raw_data)
-        elif classification == "other_poi":
-            extracted_data = extract_searchable_data(raw_data)
+    for text in extracted_cv.commercial_experience:
+        structured_cv.commercial_experience.append(extract_commercial_experience(text))
 
-        converted_chunks.append([classification, extracted_data])
+    for text in extracted_cv.private_experience:
+        structured_cv.private_experience.append(extract_private_experience(text))
 
-    return converted_chunks
+    for text in extracted_cv.degrees:
+        structured_cv.degrees.append(extract_education(text))
+
+    for text in extracted_cv.socials:
+        structured_cv.socials.append(extract_social_profiles(text))
+
+    for text in extracted_cv.websites:
+        structured_cv.websites.append(extract_websites(text))
+
+    for text in extracted_cv.other_poi:
+        structured_cv.other_poi.append(extract_searchable_data(text))
+
+    return structured_cv
 
 
 def extract_cv_entries(raw_chunks: list[str]):
     text = "\n".join(raw_chunks)
-    structured_llm = functional_llm.with_structured_output(ExtractedStructuredCV)
+    structured_llm = functional_llm.with_structured_output(ExtractedCV)
     workflow = extraction_prompt | structured_llm
     result = workflow.invoke({"data": text, "section": "searchable_data"})
     return result
