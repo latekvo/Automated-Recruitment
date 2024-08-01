@@ -51,7 +51,7 @@ def read_cv_from_path(cv_path: str) -> list[str]:
 class DeterminedClassification(BaseModel):
     """Classification of a chunks into CV categories."""
 
-    category: bool = Field(
+    category: str = Field(
         description=(
             "The CV category to which the text belongs. "
             "If provided text intersects 2 categories, select the first one."
@@ -59,7 +59,7 @@ class DeterminedClassification(BaseModel):
         required=False,  # couldn't determine and that's normal
         default=None,
     )
-    second_category: bool = Field(
+    second_category: str = Field(
         description=(
             "When 2 categories appear to be present in provided chunk of text, select the second one. "
             "Otherwise, leave empty. "
@@ -105,7 +105,7 @@ def classify_cv_chunks(
 
     for grouped_chunk in grouped_chunks:
         print(
-            f"classification progress: {len(classified_chunks)}/{len(grouped_chunks)}"
+            f"classification progress: {len(classified_chunks)}/{len(grouped_chunks)*chunk_grouping_amount}"
         )
         classification = classify_chunk("\n".join(grouped_chunk))
 
@@ -148,7 +148,7 @@ def coagulate_cv_chunks(classified_chunks: ClassifiedChunkList) -> ClassifiedChu
         if chunk[0] != previous_classification:
             coagulated_list.append([chunk[0], ""])
             previous_classification = chunk[0]
-        coagulated_list[-1].append(chunk[1])
+        coagulated_list[-1][1] += chunk[1]
 
     return coagulated_list
 
