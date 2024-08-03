@@ -4,8 +4,9 @@ from core.cv_tools import read_cv_from_path
 
 # read CV
 raw_cv = read_cv_from_path("static/senior-software-developer.pdf")
+raw_text = "\n".join(raw_cv)
 
-extracted_entries = extract_cv_entries(raw_cv)
+extracted_entries = extract_cv_entries(raw_text)
 print("--- EXTRACTED ENTRIES ---")
 print(extracted_entries)
 

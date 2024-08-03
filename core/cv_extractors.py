@@ -8,6 +8,8 @@ from core.cv_structures import (
     extraction_prompt,
     ExtractedCV,
     StructuredCV,
+    division_prompt,
+    SplitCV,
 )
 from core.llm_loader import get_llm
 from core.utils import ensure_workflow_output
@@ -85,9 +87,32 @@ def extracted_to_structured_cv(extracted_cv: ExtractedCV) -> StructuredCV:
     return structured_cv
 
 
-def extract_cv_entries(raw_chunks: list[str]):
-    text = "\n".join(raw_chunks)
+length_threshold = 2000
+
+
+def divide_cv(text) -> list[str]:
+    if len(text) < length_threshold:
+        return [text]
+
+    structured_llm = functional_llm.with_structured_output(SplitCV)
+    workflow = division_prompt | structured_llm
+    fragments = ensure_workflow_output(workflow, {"data": text})
+
+    return fragments
+
+
+def extract_cv_entries(text: str):
+    text_slices = divide_cv(text)
+
     structured_llm = functional_llm.with_structured_output(ExtractedCV)
     workflow = extraction_prompt | structured_llm
-    result = ensure_workflow_output(workflow, {"data": text, "section": "Entire CV"})
-    return result
+
+    extracted_cv = ExtractedCV()
+
+    for cv_slice in text_slices:
+        cv_fragment = ensure_workflow_output(
+            workflow, {"data": cv_slice, "section": "Entire CV"}
+        )
+        extracted_cv.extend(cv_fragment)
+
+    return extracted_cv

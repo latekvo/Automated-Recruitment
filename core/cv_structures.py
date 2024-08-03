@@ -1,5 +1,6 @@
-from typing import Literal, Optional
+from __future__ import annotations
 
+from typing import Literal, Optional
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
 
@@ -145,6 +146,17 @@ class ExtractedCV(BaseModel):
     )
 
 
+class SplitCV(BaseModel):
+    """Coherently split CV"""
+
+    fragments: list[str] = Field(
+        title="CV fragments",
+        description="Parts of CV which is to be divided into 2 or more parts",
+        default=[],
+        required=True,
+    )
+
+
 class StructuredCV:
     full_name: str = "N/A"
     commercial_experience: list[ExtractedRole] = []
@@ -153,6 +165,14 @@ class StructuredCV:
     websites: list[ExtractedWebsite] = []
     socials: list[ExtractedSocialProfile] = []
     other_poi: list[ExtractedOtherSearchable] = []
+
+    def extend(self, other: StructuredCV):
+        self.commercial_experience.extend(other.commercial_experience)
+        self.private_experience.extend(other.private_experience)
+        self.degrees.extend(other.degrees)
+        self.websites.extend(other.websites)
+        self.socials.extend(other.socials)
+        self.other_poi.extend(other.other_poi)
 
     def __repr__(self):
         return (
@@ -222,6 +242,26 @@ classification_prompt = ChatPromptTemplate.from_messages(
             "you are provided with unknown sections of CVs, "
             "you are to determine the category of those sections. "
             "your job is to strictly follow the instructions. "
+            "here are the available categories:\n" + concatenated_categories,
+        ),
+        (
+            "user",
+            "Chunk: ```{data}```",
+        ),
+    ]
+)
+
+division_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "you are data splitter. "
+            "you are provided with unknown sections of CV, "
+            "you are to split this chunk of CV into 2 smaller meaningful chunks of similar length, "
+            "while avoiding splitting text in middle of a single entry or section. "
+            "avoid splitting a single section of coherent text in two, "
+            "even if that means splitting the chunk into uneven fragments. "
+            "never, under any circumstances split a single meaningful entry in two"
             "here are the available categories:\n" + concatenated_categories,
         ),
         (
