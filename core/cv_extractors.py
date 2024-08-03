@@ -10,6 +10,7 @@ from core.cv_structures import (
     StructuredCV,
 )
 from core.llm_loader import get_llm
+from core.utils import ensure_workflow_output
 
 functional_llm = get_llm()
 
@@ -17,43 +18,45 @@ functional_llm = get_llm()
 def extract_education(text: str) -> ExtractedDegree:
     structured_llm = functional_llm.with_structured_output(ExtractedDegree)
     workflow = extraction_prompt | structured_llm
-    result = workflow.invoke({"data": text, "section": "education"})
-    return result
+    return ensure_workflow_output(workflow, {"data": text, "section": "education"})
 
 
 def extract_commercial_experience(text: str) -> ExtractedRole:
     structured_llm = functional_llm.with_structured_output(ExtractedRole)
     workflow = extraction_prompt | structured_llm
-    result = workflow.invoke({"data": text, "section": "commercial_experience"})
-    return result
+    return ensure_workflow_output(
+        workflow, {"data": text, "section": "commercial_experience"}
+    )
 
 
 def extract_private_experience(text: str) -> ExtractedProject:
     structured_llm = functional_llm.with_structured_output(ExtractedProject)
     workflow = extraction_prompt | structured_llm
-    result = workflow.invoke({"data": text, "section": "private_experience"})
-    return result
+    return ensure_workflow_output(
+        workflow, {"data": text, "section": "private_experience"}
+    )
 
 
 def extract_websites(text: str) -> ExtractedWebsite:
     structured_llm = functional_llm.with_structured_output(ExtractedWebsite)
     workflow = extraction_prompt | structured_llm
-    result = workflow.invoke({"data": text, "section": "websites"})
-    return result
+    return ensure_workflow_output(workflow, {"data": text, "section": "websites"})
 
 
 def extract_social_profiles(text: str) -> ExtractedSocialProfile:
     structured_llm = functional_llm.with_structured_output(ExtractedSocialProfile)
     workflow = extraction_prompt | structured_llm
-    result = workflow.invoke({"data": text, "section": "social_profiles"})
-    return result
+    return ensure_workflow_output(
+        workflow, {"data": text, "section": "social_profiles"}
+    )
 
 
 def extract_searchable_data(text: str) -> ExtractedOtherSearchable:
     structured_llm = functional_llm.with_structured_output(ExtractedOtherSearchable)
     workflow = extraction_prompt | structured_llm
-    result = workflow.invoke({"data": text, "section": "searchable_data"})
-    return result
+    return ensure_workflow_output(
+        workflow, {"data": text, "section": "searchable_data"}
+    )
 
 
 def extracted_to_structured_cv(extracted_cv: ExtractedCV) -> StructuredCV:
@@ -86,5 +89,5 @@ def extract_cv_entries(raw_chunks: list[str]):
     text = "\n".join(raw_chunks)
     structured_llm = functional_llm.with_structured_output(ExtractedCV)
     workflow = extraction_prompt | structured_llm
-    result = workflow.invoke({"data": text, "section": "searchable_data"})
+    result = ensure_workflow_output(workflow, {"data": text, "section": "Entire CV"})
     return result

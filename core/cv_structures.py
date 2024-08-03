@@ -98,37 +98,50 @@ class ExtractedOtherSearchable(BaseModel):
 
     title: str = Field(description="Point of interest title", required=True)
     data: list[str] = Field(
-        description="Data relevant to this point of interest", required=True
+        description="Data relevant to this point of interest", required=False
     )
 
 
 class ExtractedCV(BaseModel):
     """Structured CV entries"""
 
-    full_name: str = Field(title="Full candidate's name", default=[])
+    full_name: str = Field(
+        title="Full candidate's name",
+    )
     commercial_experience: list[str] = Field(
         title="Commercial experience",
         description="Experience attained in a commercial, professional environment",
         default=[],
+        required=False,
     )
     private_experience: list[str] = Field(
         title="Private experience",
         description="Experience attained in a non-commercial, private project",
         default=[],
+        required=False,
     )
     degrees: list[str] = Field(
-        title="Education", description="A single degree or an institution", default=[]
+        title="Education",
+        description="A single degree or an institution",
+        default=[],
+        required=False,
     )
-    websites: list[str] = Field(title="Personal websites", default=[])
+    websites: list[str] = Field(
+        title="Personal websites",
+        default=[],
+        required=False,
+    )
     socials: list[str] = Field(
         title="Social media",
         description="Social media records like linkedin or twitter",
         default=[],
+        required=False,
     )
     other_poi: list[str] = Field(
         title="Other interesting points, skills, links or traits",
         description="",
         default=[],
+        required=False,
     )
 
 
@@ -140,6 +153,19 @@ class StructuredCV:
     websites: list[ExtractedWebsite] = []
     socials: list[ExtractedSocialProfile] = []
     other_poi: list[ExtractedOtherSearchable] = []
+
+    def __repr__(self):
+        return (
+            f"StructuredCV("
+            f"full_name={self.full_name!r}, "
+            f"commercial_experience={[repr(role) for role in self.commercial_experience]}, "
+            f"private_experience={[repr(proj) for proj in self.private_experience]}, "
+            f"degrees={[repr(degree) for degree in self.degrees]}, "
+            f"websites={[repr(site) for site in self.websites]}, "
+            f"socials={[repr(social) for social in self.socials]}, "
+            f"other_poi={[repr(poi) for poi in self.other_poi]}"
+            f")"
+        )
 
 
 SectionsEnum = Optional[
