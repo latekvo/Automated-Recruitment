@@ -140,10 +140,17 @@ class ExtractedCV(BaseModel):
     )
     other_poi: list[str] = Field(
         title="Other interesting points, skills, links or traits",
-        description="",
         default=[],
         required=False,
     )
+
+    def extend(self, other: ExtractedCV):
+        self.commercial_experience.extend(other.commercial_experience)
+        self.private_experience.extend(other.private_experience)
+        self.degrees.extend(other.degrees)
+        self.websites.extend(other.websites)
+        self.socials.extend(other.socials)
+        self.other_poi.extend(other.other_poi)
 
 
 class SplitCV(BaseModel):
@@ -165,14 +172,6 @@ class StructuredCV:
     websites: list[ExtractedWebsite] = []
     socials: list[ExtractedSocialProfile] = []
     other_poi: list[ExtractedOtherSearchable] = []
-
-    def extend(self, other: StructuredCV):
-        self.commercial_experience.extend(other.commercial_experience)
-        self.private_experience.extend(other.private_experience)
-        self.degrees.extend(other.degrees)
-        self.websites.extend(other.websites)
-        self.socials.extend(other.socials)
-        self.other_poi.extend(other.other_poi)
 
     def __repr__(self):
         return (

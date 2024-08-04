@@ -1,3 +1,5 @@
+import math
+
 from core.cv_structures import (
     ExtractedProject,
     ExtractedDegree,
@@ -91,13 +93,25 @@ length_threshold = 2000
 
 
 def divide_cv(text) -> list[str]:
-    if len(text) < length_threshold:
-        return [text]
+    # non-LLM method is quicker and more reliable for now
+    # structured_llm = functional_llm.with_structured_output(SplitCV)
+    # workflow = division_prompt | structured_llm
+    # fragments = ensure_workflow_output(workflow, {"data": text})
 
-    structured_llm = functional_llm.with_structured_output(SplitCV)
-    workflow = division_prompt | structured_llm
-    fragments = ensure_workflow_output(workflow, {"data": text})
+    parts = math.ceil(len(text) / length_threshold)
+    fragment_length = len(text) // parts
+    remainder = len(text) % parts
 
+    fragments = []
+    start = 0
+
+    for i in range(parts):
+        end = start + fragment_length + (1 if i < remainder else 0)
+        fragments.append(text[start:end])
+        start = end
+
+    print("--- FRAGMENTS ---")
+    print(fragments)
     return fragments
 
 
@@ -107,12 +121,15 @@ def extract_cv_entries(text: str):
     structured_llm = functional_llm.with_structured_output(ExtractedCV)
     workflow = extraction_prompt | structured_llm
 
-    extracted_cv = ExtractedCV()
+    extracted_cv = None
 
     for cv_slice in text_slices:
         cv_fragment = ensure_workflow_output(
             workflow, {"data": cv_slice, "section": "Entire CV"}
         )
-        extracted_cv.extend(cv_fragment)
+        if extracted_cv is None:
+            extracted_cv = cv_fragment
+        else:
+            extracted_cv.extend(cv_fragment)
 
     return extracted_cv
