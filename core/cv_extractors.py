@@ -10,8 +10,6 @@ from core.cv_structures import (
     extraction_prompt,
     ExtractedCV,
     StructuredCV,
-    division_prompt,
-    SplitCV,
 )
 from core.llm_loader import get_llm
 from core.utils import ensure_workflow_output

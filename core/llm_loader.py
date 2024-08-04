@@ -1,7 +1,7 @@
 import os
 import getpass
 
-from langchain_experimental.llms.ollama_functions import OllamaFunctions
+from langchain_ollama import ChatOllama
 from langchain_google_genai import ChatGoogleGenerativeAI
 from enum import Enum
 
@@ -23,6 +23,6 @@ def get_llm():
 
         return ChatGoogleGenerativeAI(model=model.value)
     elif model == Models.OLLAMA:
-        return OllamaFunctions(model=model.value, format="json")
+        return ChatOllama(model=model.value, format="json")
     else:
         raise Exception
