@@ -1,15 +1,26 @@
 from core.cv_extractors import extract_cv_entries, extracted_to_structured_cv
-from core.cv_tools import read_cv_from_path
+from core.cv_tools import (
+    read_cv_from_path,
+    save_structured_cv_to_path,
+    read_structured_cv_from_path,
+)
 
+evaluated_cv_name = "senior-software-developer.pdf"
 
-# read CV
-raw_cv = read_cv_from_path("static/senior-software-developer.pdf")
-raw_text = "\n".join(raw_cv)
+structured_cv = read_structured_cv_from_path(evaluated_cv_name)
 
-extracted_entries = extract_cv_entries(raw_text)
-print("--- EXTRACTED ENTRIES ---")
-print(extracted_entries)
+if structured_cv is None:
+    # read CV
+    raw_cv = read_cv_from_path(evaluated_cv_name)
+    raw_text = "\n".join(raw_cv)
 
-structured_entries = extracted_to_structured_cv(extracted_entries)
+    extracted_entries = extract_cv_entries(raw_text)
+    print("--- EXTRACTED ENTRIES ---")
+    print(extracted_entries)
+
+    structured_cv = extracted_to_structured_cv(extracted_entries)
+
+    save_structured_cv_to_path(evaluated_cv_name, structured_cv)
+
 print("--- STRUCTURED ENTRIES ---")
-print(structured_entries)
+print(structured_cv)

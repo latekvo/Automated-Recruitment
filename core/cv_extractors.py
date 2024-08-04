@@ -115,7 +115,7 @@ def divide_cv(text) -> list[str]:
     return fragments
 
 
-def extract_cv_entries(text: str):
+def extract_cv_entries(text: str) -> ExtractedCV:
     text_slices = divide_cv(text)
 
     structured_llm = functional_llm.with_structured_output(ExtractedCV)
