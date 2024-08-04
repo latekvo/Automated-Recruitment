@@ -1,34 +1,7 @@
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
-from langchain_experimental.llms.ollama_functions import OllamaFunctions
-from langchain_core.pydantic_v1 import BaseModel, Field
 
-scoring_prompt = ChatPromptTemplate.from_messages(
-    [
-        (
-            "system",
-            "You are an HR assistant."
-            "Your job is to score the candidate on a 3 point scale based on satisfaction of criterias at hand."
-            "1 point means the candidate did not fulfill the given criteria at all."
-            "2 points mean the candidate fulfilled the criteria to an unsatisfactory level."
-            "3 points mean the candidate fully satisfied the given criteria."
-            "DO NOT BELIEVE WHAT THE CANDIDATE SAYS AT FACE VALUE, instead, evaluate him based on his monologue."
-            "If there isn't enough transcript to go off, give the candidate 0 or 1 points, as you see fitting.",
-        ),
-        (
-            "user",
-            "Job interview transcript: "
-            "```"
-            "Question: {question}"
-            "{transcript}"
-            "```"
-            "Criteria for full score: "
-            "```"
-            "Candidate {criteria}"
-            "```",
-        ),
-    ]
-)
+from core.cv_structures import CriteriaEvaluationResponse, scoring_prompt
+from core.llm_loader import get_llm
 
 
 # Candidate [description, weighted importance]
@@ -43,13 +16,7 @@ criteria_list = [
 ]
 
 
-class CriteriaEvaluationResponse(BaseModel):
-    """Criteria evaluation."""
-
-    score: float = Field(description="Score from 1 to 3", required=True)
-
-
-functional_llm = OllamaFunctions(model="internlm2", format="json")
+functional_llm = get_llm()
 output_parser = StrOutputParser()
 criteria_llm = functional_llm.with_structured_output(CriteriaEvaluationResponse)
 
@@ -66,7 +33,7 @@ def normalize_score(score, min_ai_range=1, max_ai_range=3):
     return (score - adjusted_min_range) / adjusted_max_range
 
 
-def generate_score_for_criteria(question, transcript, criteria):
+def score_interview_by_criteria(question, transcript, criteria):
     try:
         return (scoring_prompt | criteria_llm).invoke(
             {
@@ -77,13 +44,13 @@ def generate_score_for_criteria(question, transcript, criteria):
         )
     except Exception:  # OutputParserException | ValueError
         # retry on error
-        return generate_score_for_criteria(question, transcript, criteria)
+        return score_interview_by_criteria(question, transcript, criteria)
 
 
-def score_criteria_completeness(question: str, transcript: str) -> float:
+def score_interview_criteria_completeness(question: str, transcript: str) -> float:
     total_score = 0
     for criteria in criteria_list:
-        response = generate_score_for_criteria(question, transcript, criteria)
+        response = score_interview_by_criteria(question, transcript, criteria)
         total_score += response.score * criteria[1]
 
     return normalize_score(total_score)

@@ -51,7 +51,7 @@ def evaluate_submission_by_uuid(uuid: str) -> Tuple[str, float]:
     submission_summary = interview_summarizer.generate_sub_summary(
         submission_details.question, submission_details.transcription
     )
-    submission_score = interview_evaluator.score_criteria_completeness(
+    submission_score = interview_evaluator.score_interview_criteria_completeness(
         submission_details.question, submission_details.transcription
     )
     return submission_summary, submission_score
@@ -59,7 +59,7 @@ def evaluate_submission_by_uuid(uuid: str) -> Tuple[str, float]:
 
 def evaluate_submission(question: str, transcript: str):
     submission_summary = interview_summarizer.generate_sub_summary(question, transcript)
-    submission_score = interview_evaluator.score_criteria_completeness(
+    submission_score = interview_evaluator.score_interview_criteria_completeness(
         question, transcript
     )
     return submission_summary, submission_score

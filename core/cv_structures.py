@@ -187,6 +187,25 @@ class StructuredCV:
         )
 
 
+class CriteriaCV:
+    job_title: str = "not specified"
+    job_description: str = "not specified"
+
+    # optional
+    required_technologies: list[str] = None
+    required_experience: list[str] = None
+    education: str = None
+    total_experience: str = None
+    commercial_experience: str = None
+    private_experience: str = None
+
+
+class CriteriaEvaluationResponse(BaseModel):
+    """Criteria evaluation."""
+
+    score: float = Field(description="Score from 1 to 3", required=True)
+
+
 SectionsEnum = Optional[
     Literal[
         "private_details",
@@ -246,6 +265,35 @@ classification_prompt = ChatPromptTemplate.from_messages(
         (
             "user",
             "Chunk: ```{data}```",
+        ),
+    ]
+)
+
+scoring_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "You are an HR assistant."
+            "You will be provided with either interview transcript or CV entries"
+            "Your job is to score the candidate on a 3 point scale based on satisfaction of criteria at hand."
+            "1 point means the candidate did not fulfill the given criteria at all."
+            "2 points mean the candidate fulfilled the criteria to an unsatisfactory level."
+            "3 points mean the candidate fully satisfied the given criteria."
+            "DO NOT BELIEVE WHAT THE CANDIDATE SAYS AT FACE VALUE, instead, evaluate him based on his monologue."
+            "If there isn't enough transcript or entries to go off, "
+            "grade the candidate only based on the provided data.",
+        ),
+        (
+            "user",
+            "Job interview transcript: "
+            "```"
+            "Question: {question}"
+            "{transcript}"
+            "```"
+            "Criteria for full score: "
+            "```"
+            "Candidate {criteria}"
+            "```",
         ),
     ]
 )
