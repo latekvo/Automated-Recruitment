@@ -125,6 +125,8 @@ def extract_cv_entries(text: str) -> ExtractedCV:
         cv_fragment = ensure_workflow_output(
             workflow, {"data": cv_slice, "section": "Entire CV"}
         )
+        print("--- FRAGMENT ---")
+        print(cv_fragment)
         if extracted_cv is None:
             extracted_cv = cv_fragment
         else:

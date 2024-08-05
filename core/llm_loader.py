@@ -1,7 +1,7 @@
 import os
 import getpass
 
-from langchain_ollama import ChatOllama
+from langchain_experimental.llms.ollama_functions import OllamaFunctions
 from langchain_google_genai import ChatGoogleGenerativeAI
 from enum import Enum
 
@@ -21,8 +21,8 @@ def get_llm():
                 "Provide your Google API Key"
             )
 
-        return ChatGoogleGenerativeAI(model=model.value)
+        return ChatGoogleGenerativeAI(model=model.value, format="json")
     elif model == Models.OLLAMA:
-        return ChatOllama(model=model.value, format="json")
+        return OllamaFunctions(model=model.value, format="json")
     else:
         raise Exception

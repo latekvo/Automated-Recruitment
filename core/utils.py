@@ -18,8 +18,20 @@ def ensure_workflow_output(workflow, data, max_iterations=1):
     if max_iterations < 0:
         print("Retry no.", -max_iterations)
 
+    print("--- INPUTTING ---")
+    print(data)
+
     # llm output may throw errors when it fails at the structure check stage
     try:
-        return workflow.invoke(data)
+        output = workflow.invoke(data)
+        print("--- OUTPUTTING ---")
+        print(output)
+
+        if output is None:
+            # some structured data workflows raise exceptions
+            # others return none, this system guards against both
+            raise ValueError
+
+        return output
     except ValueError:
         return ensure_workflow_output(workflow, data, max_iterations - 1)

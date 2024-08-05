@@ -108,6 +108,8 @@ class ExtractedCV(BaseModel):
 
     full_name: str = Field(
         title="Full candidate's name",
+        default="not provided",
+        required=False,  # when extractions are performed on fragments, name will not be available
     )
     commercial_experience: list[str] = Field(
         title="Commercial experience",
@@ -165,7 +167,7 @@ class SplitCV(BaseModel):
 
 
 class StructuredCV:
-    full_name: str = "N/A"
+    full_name: str = "Not provided"
     commercial_experience: list[ExtractedRole] = []
     private_experience: list[ExtractedProject] = []
     degrees: list[ExtractedDegree] = []
@@ -243,7 +245,8 @@ extraction_prompt = ChatPromptTemplate.from_messages(
             "you are provided with distinct sections of CVs, "
             "you are to extract the specified data out of them. "
             "you are provided with a clear task and topic, "
-            "your job is to strictly follow the instructions. ",
+            "your job is to strictly follow the instructions. "
+            "JSON output is expected, respond only in JSON format!",
         ),
         (
             "user",
@@ -260,6 +263,7 @@ classification_prompt = ChatPromptTemplate.from_messages(
             "you are provided with unknown sections of CVs, "
             "you are to determine the category of those sections. "
             "your job is to strictly follow the instructions. "
+            "JSON output is expected, respond only in JSON format!"
             "here are the available categories:\n" + concatenated_categories,
         ),
         (
@@ -281,7 +285,8 @@ scoring_prompt = ChatPromptTemplate.from_messages(
             "3 points mean the candidate fully satisfied the given criteria."
             "DO NOT BELIEVE WHAT THE CANDIDATE SAYS AT FACE VALUE, instead, evaluate him based on his monologue."
             "If there isn't enough transcript or entries to go off, "
-            "grade the candidate only based on the provided data.",
+            "grade the candidate only based on the provided data."
+            "JSON output is expected, respond only in JSON format!",
         ),
         (
             "user",
