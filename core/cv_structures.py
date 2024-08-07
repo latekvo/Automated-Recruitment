@@ -175,16 +175,55 @@ class StructuredCV:
     socials: list[ExtractedSocialProfile] = []
     other_poi: list[ExtractedOtherSearchable] = []
 
+    def dump(self):
+        # lists of pydantic instances cannot be automatically pickled
+        return {
+            "full_name": self.full_name,
+            "commercial_experience": [dict(val) for val in self.commercial_experience],
+            "private_experience": [dict(val) for val in self.private_experience],
+            "degrees": [dict(val) for val in self.degrees],
+            "websites": [dict(val) for val in self.websites],
+            "socials": [dict(val) for val in self.socials],
+            "other_poi": [dict(val) for val in self.other_poi],
+        }
+
+    def load(self, data: dict):
+        self.full_name = data["full_name"]
+        # unfortunately cannot simplify this further due to hard-typed ExtractedX classes
+        for item in data["commercial_experience"]:
+            print("--- AAA ---")
+            print(item)
+            structured_item = ExtractedRole(**item)
+            print(structured_item)
+            self.commercial_experience.append(structured_item)
+            print(self.commercial_experience)
+        for item in data["private_experience"]:
+            structured_item = ExtractedProject(**item)
+            self.private_experience.append(structured_item)
+        for item in data["degrees"]:
+            structured_item = ExtractedDegree(**item)
+            self.degrees.append(structured_item)
+        for item in data["websites"]:
+            structured_item = ExtractedWebsite(**item)
+            self.websites.append(structured_item)
+        for item in data["socials"]:
+            structured_item = ExtractedSocialProfile(**item)
+            self.socials.append(structured_item)
+        for item in data["other_poi"]:
+            structured_item = ExtractedOtherSearchable(**item)
+            self.other_poi.append(structured_item)
+        return self
+
     def __repr__(self):
         return (
             f"StructuredCV("
             f"full_name={self.full_name!r}, "
-            f"commercial_experience={[repr(role) for role in self.commercial_experience]}, "
-            f"private_experience={[repr(proj) for proj in self.private_experience]}, "
-            f"degrees={[repr(degree) for degree in self.degrees]}, "
-            f"websites={[repr(site) for site in self.websites]}, "
-            f"socials={[repr(social) for social in self.socials]}, "
-            f"other_poi={[repr(poi) for poi in self.other_poi]}"
+            f"commercial_experience={[val for val in self.commercial_experience]}, "
+            f"private_experience={[val for val in self.private_experience]}, "
+            f"degrees={[val for val in self.degrees]}, "
+            f"websites={[val for val in self.websites]}, "
+            f"socials={[val for val in self.socials]}, "
+            f"other_poi={[val for val in self.other_poi]}"
             f")"
         )
 
