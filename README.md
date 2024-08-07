@@ -15,7 +15,15 @@ By reducing the candidate pool by 90%, we can extract those, who are worth revie
 
 ### Running:
 
-Standalone demonstration: `python test.py`
+#### Prepare: 
+- `conda env create`
+- `conda activate AutomatedRecruitment`
+
+#### CV analysis
+- `python test_cv.py`
+
+#### Video analysis
+- `python test_interview.py`
 
 ---
 ### Clauses:
