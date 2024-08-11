@@ -234,17 +234,61 @@ class CriteriaCV:
 
     # optional
     required_technologies: list[str] = None
-    required_experience: list[str] = None
+    required_skills: list[str] = None
     education: str = None
     total_experience: str = None
     commercial_experience: str = None
     private_experience: str = None
 
+    def get_text_representation(self):
+        # like __repr__ but more descriptive
+        return (
+            f"Details and requirements:\n\n"
+            f"Vacancy title: {self.job_title!r}, \n\n"
+            f"Job description: {self.job_description!r}, \n\n"
+            f"Required technical skills: {[val for val in self.required_technologies]}, \n"
+            f"Required other skills: {[val for val in self.required_skills]}, \n"
+            f"Academic requirements: {self.education!r}, \n"
+            f"Experience requirements: {self.total_experience!r}, \n"
+            f"Preferable professional experience: {self.commercial_experience!r}, \n"
+            f"Preferable private experience={self.private_experience!r})"
+        )
+
 
 class CriteriaEvaluationResponse(BaseModel):
     """Criteria evaluation."""
 
-    score: float = Field(description="Score from 1 to 3", required=True)
+    score: float = Field(
+        title="Criteria evaluation score",
+        description="Score from 1 to 3",
+        required=True,
+    )
+
+
+class EligibilityEvaluationResponse(BaseModel):
+    """Eligibility evaluation."""
+
+    is_eligible: bool = Field(
+        title="Is eligible",
+        description="Is candidate eligible true or false",
+        required=True,
+    )
+
+
+class VerboseEligibilityEvaluationResponse(BaseModel):
+    """Eligibility evaluation with extra verbosity."""
+
+    decision_explanation: str = Field(
+        title="Explanation of decision",
+        description="Explain the reasoning for accepting or rejecting this candidate",
+        required=True,
+    )
+
+    is_eligible: bool = Field(
+        title="Is eligible",
+        description="Is candidate eligible true or false",
+        required=True,
+    )
 
 
 SectionsEnum = Optional[
@@ -337,6 +381,31 @@ scoring_prompt = ChatPromptTemplate.from_messages(
             "Criteria for full score: "
             "```"
             "Candidate {criteria}"
+            "```",
+        ),
+    ]
+)
+
+eligibility_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "You are an HR assistant. "
+            "You will be provided with either interview transcript or CV entries, and the requirements for vacancy. "
+            "Your job is to decide whether the candidate complies with the given set of requirements or not. "
+            "DO NOT BELIEVE WHAT THE CANDIDATE SAYS AT FACE VALUE, instead, evaluate him based on the provided data. "
+            "If there isn't enough transcript or entries to go off, assume the candidate is NOT eligible. "
+            "JSON output is expected, respond only in JSON format!",
+        ),
+        (
+            "user",
+            "Requirements: "
+            "```"
+            "{criteria}"
+            "```"
+            "Candidate data: "
+            "```"
+            "{candidate}"
             "```",
         ),
     ]
