@@ -8,16 +8,34 @@ Current candidate pool is littered with spam.
 This is caused by over-reliance on CVs and other market factors, which can be mitigated by introducing novel assessment methods.
 By reducing the candidate pool by 90%, we can extract those, who are worth reviewing manually, and automatically but organically reject those, who wouldn't meet skill expectations otherwise.
 
-### Requirements
+### State of project
+
+`completed`
+- Video interview assessment & scoring logic
+- Resume assessment logic
+- Recruitment management database system (Video part)
+
+`in progress`
+- Webui for CV assessment
+- Recruitment management database system (CV part)
+
+`next goals`
+- Job boards API connectivity
+- Integrate CV scoring with existing database system
+- Scale AI workflow by breaking it up into docker workers
+- Automatic video interview dispatching to assessed candidates
+- Live-generated interview questions
+
+## Running
+
+### Prerequisites
 
 - Make sure to have tesseract ocr command line utility installed on you machine.
 - Use provided conda environment to download all required packages.
 
-### Running:
 
-#### Prepare: 
+#### Prepare environment:
 - `conda env create`
-- `conda activate AutomatedRecruitment`
 
 #### CV assessment webui
 - `cd webui`
@@ -25,9 +43,11 @@ By reducing the candidate pool by 90%, we can extract those, who are worth revie
 - `npm start`
 
 #### CV analysis test
+- `conda activate AutomatedRecruitment`
 - `python test_cv.py`
 
 #### Video analysis test
+- `conda activate AutomatedRecruitment`
 - `python test_interview.py`
 
 ---
