@@ -1,7 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from core.database import add_submission
 
 app = FastAPI()
 app.add_middleware(
@@ -19,36 +18,16 @@ class SubmissionRequest(BaseModel):
     video: str
 
 
-@app.post("/submit_answer")
-def submit_answer(submission: SubmissionRequest):
-    filename = None
-    add_submission(
-        application_uuid=submission.application_uuid,
-        task_uuid=submission.task_uuid,
-        filename=filename,
-    )
+@app.post("/resume_manual_evaluation")
+async def upload_files(files: list[UploadFile] = File(...), text: str = Form(...)):
+    file_info = []
+    for file in files:
+        file_info.append(
+            {
+                "filename": file.filename,
+                "content_type": file.content_type,
+                "size": len(await file.read()),
+            }
+        )
 
-
-@app.get("/get_question_by_task_uuid")
-def submit_answer(task_uuid: str) -> str:
-    return "Example question"
-
-
-class RecruitationScoresResponse(BaseModel):
-    video: str
-    question: str
-
-
-@app.get("/get_recruitation_scores")
-def submit_answer(recruitment_uuid: str) -> RecruitationScoresResponse:
-    pass
-
-
-class CreateRecruitmentRequest(BaseModel):
-    title: str
-    company: str
-
-
-@app.post("/add_recruitation")
-def submit_answer(req: CreateRecruitmentRequest):
-    pass
+    return {"text": text, "files": file_info}
