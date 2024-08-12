@@ -19,16 +19,16 @@ By reducing the candidate pool by 90%, we can extract those, who are worth revie
 - `conda env create`
 - `conda activate AutomatedRecruitment`
 
-#### CV analysis
-- `python test_cv.py`
-
-#### Video analysis
-- `python test_interview.py`
-
-#### Start webui
-- `cd webui` or `cd react-webui`
+#### CV assessment webui
+- `cd webui`
 - `npm install`
 - `npm start`
+
+#### CV analysis test
+- `python test_cv.py`
+
+#### Video analysis test
+- `python test_interview.py`
 
 ---
 ### Clauses:
