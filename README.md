@@ -18,6 +18,7 @@ By reducing the candidate pool by 90%, we can extract those, who are worth revie
 `in progress`
 - Webui for CV assessment
 - Recruitment management database system (CV part)
+- Resolve conflicts preventing simultaneous usage of video and cv modules
 
 `next goals`
 - Job boards API connectivity

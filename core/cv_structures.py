@@ -191,12 +191,8 @@ class StructuredCV:
         self.full_name = data["full_name"]
         # unfortunately cannot simplify this further due to hard-typed ExtractedX classes
         for item in data["commercial_experience"]:
-            print("--- AAA ---")
-            print(item)
             structured_item = ExtractedRole(**item)
-            print(structured_item)
             self.commercial_experience.append(structured_item)
-            print(self.commercial_experience)
         for item in data["private_experience"]:
             structured_item = ExtractedProject(**item)
             self.private_experience.append(structured_item)

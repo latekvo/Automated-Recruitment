@@ -28,14 +28,14 @@ print("--- STRUCTURED ENTRIES ---")
 print(structured_cv)
 
 cv_criteria = CriteriaCV()
-cv_criteria.job_title = "Senior software engineer."
-cv_criteria.job_description = "We're looking for competent software engineers."
-cv_criteria.required_technologies = ["Postgres", "JS", "SQL"]
-cv_criteria.required_skills = ["Management skills", "Scrum mastering"]
-cv_criteria.education = "At least harvard PhD"
-cv_criteria.total_experience = "15 years in the marketing industry"
-cv_criteria.commercial_experience = "20 years in the IT industry in total"
-cv_criteria.private_experience = "good non-work-related portfolio as well"
+cv_criteria.job_title = "Junior LLM Engineer."
+cv_criteria.job_description = "We are seeking a Junior LLM Engineer to assist in developing and optimizing language models for various applications."
+cv_criteria.required_technologies = ["Gemini API", "Python", "Langchain"]
+cv_criteria.required_skills = ["Communication", "resourcefulness"]
+cv_criteria.education = "min. IT or related batchelor"
+cv_criteria.total_experience = "2 years of computer programming experience"
+cv_criteria.commercial_experience = "none required"
+cv_criteria.private_experience = "extensive project portfolio"
 
 eligibility_output = score_cv_eligibility(structured_cv, cv_criteria)
 
