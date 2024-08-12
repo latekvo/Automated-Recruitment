@@ -25,6 +25,10 @@ By reducing the candidate pool by 90%, we can extract those, who are worth revie
 #### Video analysis
 - `python test_interview.py`
 
+#### Start webui
+- `npm install`
+- `npm start`
+
 ---
 ### Clauses:
 

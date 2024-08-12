@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from core.database import add_submission
@@ -44,11 +44,11 @@ def submit_answer(recruitment_uuid: str) -> RecruitationScoresResponse:
     pass
 
 
-class CreateRecruitationRequest(BaseModel):
+class CreateRecruitmentRequest(BaseModel):
     title: str
     company: str
 
 
 @app.post("/add_recruitation")
-def submit_answer(req: CreateRecruitationRequest):
+def submit_answer(req: CreateRecruitmentRequest):
     pass
