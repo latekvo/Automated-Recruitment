@@ -11,7 +11,7 @@ class Models(Enum):
     OLLAMA = "mistral:7b-instruct-v0.3-q4_K_S"  # "gemma2:2b-instruct-q6_K"
 
 
-model = Models.OLLAMA
+model = Models.GOOGLE
 
 
 def get_llm():
