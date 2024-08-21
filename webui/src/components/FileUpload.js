@@ -1,15 +1,12 @@
 import React, { useState } from "react";
 
-export default function FileUpload() {
+export default function FileUpload({ filesRef }) {
   const [files, setFiles] = useState([]);
+  filesRef.current = files;
 
   const handleFileChange = (event) => {
     setFiles([...event.target.files]);
-  };
-
-  const handleUpload = () => {
-    // Logic to handle file upload, e.g., sending files to a server
-    console.log(files);
+    filesRef.current = files;
   };
 
   return (
@@ -22,11 +19,6 @@ export default function FileUpload() {
           onChange={handleFileChange}
           className="file-input file-input-bordered file-input-primary w-full max-w-xs"
         />
-      </div>
-      <div className="mb-4">
-        <button onClick={handleUpload} className="btn btn-primary">
-          Upload
-        </button>
       </div>
       {files.length > 0 && (
         <div className="mt-4">

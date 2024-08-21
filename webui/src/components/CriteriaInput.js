@@ -25,7 +25,12 @@ const formFields = [
     type: "text",
     defaultValue: "",
   },
-  { name: "education", label: "Education", type: "text", defaultValue: "" },
+  {
+    name: "education",
+    label: "Education",
+    type: "text",
+    defaultValue: "",
+  },
   {
     name: "totalExperience",
     label: "Total Experience",
@@ -46,7 +51,7 @@ const formFields = [
   },
 ];
 
-export default function CriteriaInput() {
+export default function CriteriaInput({ criteriaRef }) {
   const [formData, setFormData] = useState({
     jobTitle: "not specified",
     jobDescription: "not specified",
@@ -64,6 +69,7 @@ export default function CriteriaInput() {
       ...formData,
       [name]: value,
     });
+    criteriaRef.current = formData;
   };
 
   const handleSubmit = (e) => {

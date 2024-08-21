@@ -14,10 +14,10 @@ export default function App() {
     event.preventDefault();
 
     const formData = new FormData();
-    Array.from(files).forEach((file, index) => {
+    files.current.forEach((file, index) => {
       formData.append(`files[${index}]`, file);
     });
-    formData.append("criteria", criteria);
+    formData.append("criteria", criteria.current);
 
     try {
       const response = await axios.post(
@@ -27,7 +27,7 @@ export default function App() {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
       console.log("File uploaded successfully:", response.data);
     } catch (error) {
@@ -39,10 +39,10 @@ export default function App() {
     <div className="App App-header">
       <div>
         <div className="upload-section">
-          <CriteriaInput />
+          <CriteriaInput criteriaRef={criteria} />
         </div>
         <div className="upload-section">
-          <FileUpload />
+          <FileUpload filesRef={files} />
         </div>
         <div className="upload-section">
           <div>
