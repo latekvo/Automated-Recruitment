@@ -19,7 +19,10 @@ class SubmissionRequest(BaseModel):
 
 
 @app.post("/resume_manual_evaluation")
-async def upload_files(files: list[UploadFile] = File(...), text: str = Form(...)):
+async def resume_manual_evaluation(
+    files: list[UploadFile] = File(...), criteria: str = Form(...)
+):
+    print("upload request:", files, criteria)
     file_info = []
     for file in files:
         file_info.append(
@@ -30,4 +33,4 @@ async def upload_files(files: list[UploadFile] = File(...), text: str = Form(...
             }
         )
 
-    return {"text": text, "files": file_info}
+    return {"status": "success"}

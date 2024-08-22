@@ -14,10 +14,10 @@ export default function App() {
     event.preventDefault();
 
     const formData = new FormData();
-    files.current.forEach((file, index) => {
-      formData.append(`files[${index}]`, file);
+    files.current.forEach((file) => {
+      formData.append(`files`, file);
     });
-    formData.append("criteria", criteria.current);
+    formData.append("criteria", JSON.stringify(criteria.current));
 
     try {
       const response = await axios.post(
