@@ -250,6 +250,19 @@ class CriteriaCV:
             f"Preferable private experience={self.private_experience!r})"
         )
 
+    def load(self, data: dict):
+        # todo: these should come in CSV format
+        self.required_technologies = [data["required_technologies"]]
+        self.required_skills = [data["required_skills"]]
+
+        self.job_title = data["job_title"]
+        self.job_description = data["job_description"]
+        self.education = data["education"]
+        self.total_experience = data["total_experience"]
+        self.commercial_experience = data["commercial_experience"]
+        self.private_experience = data["private_experience"]
+        return self
+
 
 class CriteriaEvaluationResponse(BaseModel):
     """Criteria evaluation."""

@@ -2,25 +2,25 @@ import React, { useState } from "react";
 
 const formFields = [
   {
-    name: "jobTitle",
+    name: "job_title",
     label: "Job Title",
     type: "text",
     defaultValue: "",
   },
   {
-    name: "jobDescription",
+    name: "job_description",
     label: "Job Description",
     type: "textarea",
     defaultValue: "",
   },
   {
-    name: "requiredTechnologies",
+    name: "required_technologies",
     label: "Required Technologies (comma separated)",
     type: "text",
     defaultValue: "",
   },
   {
-    name: "requiredSkills",
+    name: "required_skills",
     label: "Required Skills (comma separated)",
     type: "text",
     defaultValue: "",
@@ -32,19 +32,19 @@ const formFields = [
     defaultValue: "",
   },
   {
-    name: "totalExperience",
+    name: "total_experience",
     label: "Total Experience",
     type: "text",
     defaultValue: "",
   },
   {
-    name: "commercialExperience",
+    name: "commercial_experience",
     label: "Commercial Experience",
     type: "text",
     defaultValue: "",
   },
   {
-    name: "privateExperience",
+    name: "private_experience",
     label: "Private Experience",
     type: "text",
     defaultValue: "",
@@ -53,14 +53,14 @@ const formFields = [
 
 export default function CriteriaInput({ criteriaRef }) {
   const [formData, setFormData] = useState({
-    jobTitle: "not specified",
-    jobDescription: "not specified",
-    requiredTechnologies: "",
-    requiredSkills: "",
+    job_title: "not specified",
+    job_description: "not specified",
+    required_technologies: "",
+    required_skills: "",
     education: "",
-    totalExperience: "",
-    commercialExperience: "",
-    privateExperience: "",
+    total_experience: "",
+    commercial_experience: "",
+    private_experience: "",
   });
 
   const handleChange = (e) => {
