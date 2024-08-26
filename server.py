@@ -2,6 +2,9 @@ from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from core.cv_interface import create_structured_cv_from_path
+from core.cv_tools import save_structured_cv_to_path, structure_extension
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -22,15 +25,15 @@ class SubmissionRequest(BaseModel):
 async def resume_manual_evaluation(
     files: list[UploadFile] = File(...), criteria: str = Form(...)
 ):
-    print("upload request:", files, criteria)
-    file_info = []
+    cache_filepath = "cache/"
     for file in files:
-        file_info.append(
-            {
-                "filename": file.filename,
-                "content_type": file.content_type,
-                "size": len(await file.read()),
-            }
-        )
+        file_contents = await file.read()
+        file_name = file.filename
+
+        f = open(cache_filepath + file_name, "wb")
+        f.write(file_contents)
+        f.close()
+
+        structured_cv = create_structured_cv_from_path(file_name)
 
     return {"status": "success"}
