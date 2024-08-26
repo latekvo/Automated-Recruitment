@@ -12,6 +12,7 @@ from core.cv_structures import StructuredCV
 
 static_path = "static/"
 cache_path = "cache/"
+structure_extension = ".structure"
 
 
 def read_cv_from_path(cv_path: str) -> list[str]:
@@ -38,17 +39,8 @@ def read_cv_from_path(cv_path: str) -> list[str]:
     return clean_elements
 
 
-def read_structured_cv_from_path(cv_path: str) -> StructuredCV | None:
-    try:
-        with open(cache_path + cv_path, "r") as file:
-            deserialized = json.loads(file.read())
-            return StructuredCV().load(deserialized)
-    except Exception:
-        return None
-
-
 def save_structured_cv_to_path(cv_path: str, structured_cv: StructuredCV):
     os.makedirs(os.path.dirname(cache_path), exist_ok=True)
-    with open(cache_path + cv_path, "w") as file:
+    with open(cache_path + cv_path + structure_extension, "w") as file:
         serialized = json.dumps(structured_cv.dump())
         file.write(serialized)
