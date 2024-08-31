@@ -35,6 +35,21 @@ export default function App() {
     }
   };
 
+  const socket = new WebSocket(
+    "ws://localhost:8000/get_resume_evaluation_results",
+  );
+
+  // Connection opened
+  socket.addEventListener("open", (event) => {
+    console.log("Connection established");
+    socket.send("Connection established");
+  });
+
+  // Listen for messages
+  socket.addEventListener("message", (event) => {
+    console.log("Message from server:  ", event.data);
+  });
+
   return (
     <div className="App App-header">
       <div>

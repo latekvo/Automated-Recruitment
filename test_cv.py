@@ -1,4 +1,4 @@
-from core.cv_evaluator import score_cv_eligibility
+from core.cv_evaluator import score_cv_eligibility_verbose
 from core.cv_interface import create_structured_cv_from_path
 from core.cv_structures import CriteriaCV
 
@@ -19,7 +19,7 @@ cv_criteria.total_experience = "2 years of computer programming experience"
 cv_criteria.commercial_experience = "none required"
 cv_criteria.private_experience = "extensive project portfolio"
 
-eligibility_output = score_cv_eligibility(structured_cv, cv_criteria)
+eligibility_output = score_cv_eligibility_verbose(structured_cv, cv_criteria)
 
 print("--- IS ELIGIBLE ---")
 print("is eligible:", eligibility_output.is_eligible)
