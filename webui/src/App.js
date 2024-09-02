@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 
 import "./App.css";
@@ -9,6 +9,7 @@ import CriteriaInput from "./components/CriteriaInput";
 export default function App() {
   const files = useRef([]);
   const criteria = useRef({});
+  const [results, setResults] = useState([]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -35,20 +36,25 @@ export default function App() {
     }
   };
 
-  const socket = new WebSocket(
-    "ws://localhost:8000/get_resume_evaluation_results",
+  const socket = useMemo(
+    () => new WebSocket("ws://localhost:8000/get_resume_evaluation_results"),
+    [],
   );
 
-  // Connection opened
-  socket.addEventListener("open", (event) => {
-    console.log("Connection established");
-    socket.send("Connection established");
-  });
+  useEffect(() => {
+    socket.addEventListener("open", () => {
+      console.log("Connection established");
+    });
 
-  // Listen for messages
-  socket.addEventListener("message", (event) => {
-    console.log("Message from server:  ", event.data);
-  });
+    socket.addEventListener("message", (event) => {
+      console.log("Received resume:", event.data);
+
+      const combinedResults = [...results, event.data];
+      console.log("All completions so far:", combinedResults);
+
+      setResults(combinedResults);
+    });
+  }, []);
 
   return (
     <div className="App App-header">

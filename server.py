@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 import json
 from dataclasses import dataclass
 
@@ -39,8 +40,17 @@ class CompletedResumeEvaluation:
     explanation: str | None  # only available with verbose mode, compute-heavy
 
 
-batch_evaluation_queue = []
-evaluated_resumes = []
+batch_evaluation_queue: list[BatchResumeManualEvaluationTask] = []
+evaluated_resumes: list[CompletedResumeEvaluation] = []
+observers: list[WebSocket] = []
+
+
+def add_evaluated_resume(evaluation: CompletedResumeEvaluation):
+    evaluated_resumes.append(evaluation)
+    for observer in observers:
+        data_dict = dataclasses.asdict(evaluation)
+        data_json = json.dumps(data_dict)
+        observer.send_text(data_json)
 
 
 @app.post("/resume_manual_evaluation")
@@ -71,7 +81,7 @@ async def resume_manual_evaluation(
         else:
             eligibility_output = score_cv_eligibility(structured_cv, criteria_object)
 
-        evaluated_resumes.append(
+        add_evaluated_resume(
             CompletedResumeEvaluation(
                 parentId=batch_id,
                 resume_file_path=file_name,
@@ -89,4 +99,9 @@ async def get_resume_evaluation_results(websocket: WebSocket):
     # 1. send all evaluated resumes
     # 2. send each new collected resume
 
-    await websocket.send_text(f"Hello world")
+    for resume in evaluated_resumes:
+        data_dict = dataclasses.asdict(resume)
+        data_json = json.dumps(data_dict)
+        await websocket.send_text(data_json)
+
+    observers.append(websocket)
