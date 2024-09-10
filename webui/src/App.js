@@ -5,6 +5,7 @@ import "./App.css";
 
 import FileUpload from "./components/FileUpload";
 import CriteriaInput from "./components/CriteriaInput";
+import CompletionDisplay from "./components/CompletionDisplay";
 
 export default function App() {
   const files = useRef([]);
@@ -57,20 +58,26 @@ export default function App() {
   }, []);
 
   return (
-    <div className="App App-header">
+    <div className="root grid grid-cols-2">
       <div>
-        <div className="upload-section">
+        <div className="section ">
           <CriteriaInput criteriaRef={criteria} />
         </div>
-        <div className="upload-section">
+      </div>
+      <div>
+        <div className="section">
           <FileUpload filesRef={files} />
         </div>
-        <div className="upload-section">
-          <div>
-            <button className="btn btn-primary" onClick={handleSubmit}>
-              Submit
-            </button>
-          </div>
+        <div className="section">
+          <h1 className="inline ml-2 mr-4">
+            Start processing uploaded resumes
+          </h1>
+          <button className="btn btn-primary" onClick={handleSubmit}>
+            Submit
+          </button>
+        </div>
+        <div className="section">
+          <CompletionDisplay />
         </div>
       </div>
     </div>

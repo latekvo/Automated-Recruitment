@@ -27,25 +27,25 @@ const formFields = [
   },
   {
     name: "education",
-    label: "Education",
+    label: "Education requirements",
     type: "text",
     defaultValue: "",
   },
   {
     name: "total_experience",
-    label: "Total Experience",
+    label: "Expected minimal experience",
     type: "text",
     defaultValue: "",
   },
   {
     name: "commercial_experience",
-    label: "Commercial Experience",
+    label: "Preferred commercial experience",
     type: "text",
     defaultValue: "",
   },
   {
     name: "private_experience",
-    label: "Private Experience",
+    label: "Preferred additional experience",
     type: "text",
     defaultValue: "",
   },
@@ -89,9 +89,9 @@ export default function CriteriaInput({ criteriaRef }) {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Job Form</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="container mx-auto p-4 h-full">
+      <h1 className="text-2xl font-bold mb-4">Candidate requirements</h1>
+      <form onSubmit={handleSubmit} className=" justify-evenly">
         {formFields.map((field) => (
           <div className="criteria-entry" key={field.name}>
             <label className="label" htmlFor={field.name}>

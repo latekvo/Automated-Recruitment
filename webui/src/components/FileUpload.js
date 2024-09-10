@@ -11,7 +11,7 @@ export default function FileUpload({ filesRef }) {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Multi File Upload</h1>
+      <h1 className="text-2xl font-bold mb-4">Select resumes to analyze</h1>
       <div className="mb-4">
         <input
           type="file"
