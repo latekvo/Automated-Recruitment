@@ -89,7 +89,7 @@ export default function CriteriaInput({ criteriaRef }) {
   };
 
   return (
-    <div className="container mx-auto p-4 h-full">
+    <div className="section container">
       <h1 className="text-2xl font-bold mb-4">Candidate requirements</h1>
       <form onSubmit={handleSubmit} className=" justify-evenly">
         {formFields.map((field) => (

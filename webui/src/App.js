@@ -55,19 +55,13 @@ export default function App() {
 
       setResults(combinedResults);
     });
-  }, []);
+  }, [results, socket]);
 
   return (
-    <div className="root grid grid-cols-2">
-      <div>
-        <div className="section ">
-          <CriteriaInput criteriaRef={criteria} />
-        </div>
-      </div>
-      <div>
-        <div className="section">
-          <FileUpload filesRef={files} />
-        </div>
+    <div className="root grid grid-cols-2 gap-2 p-2">
+      <CriteriaInput criteriaRef={criteria} />
+      <div className="grid grid-rows-[auto_auto_1fr] gap-2 h-full">
+        <FileUpload filesRef={files} />
         <div className="section">
           <h1 className="inline ml-2 mr-4">
             Start processing uploaded resumes
@@ -76,9 +70,7 @@ export default function App() {
             Submit
           </button>
         </div>
-        <div className="section">
-          <CompletionDisplay />
-        </div>
+        <CompletionDisplay />
       </div>
     </div>
   );
