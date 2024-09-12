@@ -40,17 +40,30 @@ class CompletedResumeEvaluation:
     explanation: str | None  # only available with verbose mode, compute-heavy
 
 
+def serialize_evaluation(
+    evaluation_to_serialize: CompletedResumeEvaluation,
+):
+    evaluation_json = dataclasses.asdict(evaluation_to_serialize)
+    return json.dumps(evaluation_json)
+
+
 batch_evaluation_queue: list[BatchResumeManualEvaluationTask] = []
-evaluated_resumes: list[CompletedResumeEvaluation] = []
 observers: list[WebSocket] = []
+
+# storing as string for now as they'll be only ever read in that format for now
+evaluated_resumes: list[str] = [
+    serialize_evaluation(CompletedResumeEvaluation("aaa", "aaa", True, "aaa")),
+    serialize_evaluation(CompletedResumeEvaluation("bbb", "bbb", False, "bbb")),
+    serialize_evaluation(CompletedResumeEvaluation("ccc", "ccc", True, "ccc")),
+    serialize_evaluation(CompletedResumeEvaluation("ddd", "ddd", False, "ddd")),
+]
 
 
 def add_evaluated_resume(evaluation: CompletedResumeEvaluation):
-    evaluated_resumes.append(evaluation)
+    serialized_evaluation = serialize_evaluation(evaluation)
+    evaluated_resumes.append(serialized_evaluation)
     for observer in observers:
-        data_dict = dataclasses.asdict(evaluation)
-        data_json = json.dumps(data_dict)
-        observer.send_text(data_json)
+        observer.send_text(serialized_evaluation)
 
 
 @app.post("/resume_manual_evaluation")
@@ -97,11 +110,9 @@ async def resume_manual_evaluation(
 async def get_resume_evaluation_results(websocket: WebSocket):
     await websocket.accept()
     # 1. send all evaluated resumes
-    # 2. send each new collected resume
+    # 2. send each new collected resume via completion callbacks
 
     for resume in evaluated_resumes:
-        data_dict = dataclasses.asdict(resume)
-        data_json = json.dumps(data_dict)
-        await websocket.send_text(data_json)
+        await websocket.send_text(resume)
 
     observers.append(websocket)

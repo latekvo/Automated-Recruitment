@@ -1,14 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 export default function CompletionDisplay() {
-  const [eligibleResumeCount] = useState(0);
-  const [nonEligibleResumeCount] = useState(0);
-  const [completedResumes] = useState(
-    new Array(0).fill(1).map((v, i) => v * i),
+  const storedResumes = useRef([]);
+  const [displayedResumes, setDisplayedResumes] = useState([]);
+
+  const socket = useMemo(
+    () => new WebSocket("ws://localhost:8000/get_resume_evaluation_results"),
+    [],
   );
 
   // Part 1: statistics
   // Part 2: individual results + multi-format download: CSV, spreadsheet, etc.
+
+  useEffect(() => {
+    storedResumes.current = [];
+    socket.onmessage = (event) => {
+      const deserialized_data = JSON.parse(event.data);
+
+      storedResumes.current.push(deserialized_data);
+      setDisplayedResumes([...storedResumes.current]);
+    };
+  }, [socket, setDisplayedResumes]);
+
+  let eligibleResumeCount = 0;
+  let nonEligibleResumeCount = 0;
+
+  for (const resume of displayedResumes) {
+    if (resume["is_eligible"]) {
+      eligibleResumeCount++;
+    } else {
+      nonEligibleResumeCount++;
+    }
+  }
 
   return (
     <div className="section container grid grid-rows-[auto_auto_1fr] h-full">
@@ -23,8 +46,10 @@ export default function CompletionDisplay() {
       </div>
       <div className="divider"></div>
       <ul className="overflow-scroll h-full">
-        {completedResumes.length > 0 ? (
-          completedResumes.map((value) => <li>Resume entry no. {value}</li>)
+        {displayedResumes.length > 0 ? (
+          displayedResumes.map((resume) => (
+            <li key={resume["resume_file_path"]}>{JSON.stringify(resume)}</li>
+          ))
         ) : (
           <span>Analyzed resumes will appear here</span>
         )}

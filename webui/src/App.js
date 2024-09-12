@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useRef } from "react";
 import axios from "axios";
 
 import "./App.css";
@@ -10,7 +10,6 @@ import CompletionDisplay from "./components/CompletionDisplay";
 export default function App() {
   const files = useRef([]);
   const criteria = useRef({});
-  const [results, setResults] = useState([]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -36,26 +35,6 @@ export default function App() {
       console.error("Error uploading file:", error);
     }
   };
-
-  const socket = useMemo(
-    () => new WebSocket("ws://localhost:8000/get_resume_evaluation_results"),
-    [],
-  );
-
-  useEffect(() => {
-    socket.addEventListener("open", () => {
-      console.log("Connection established");
-    });
-
-    socket.addEventListener("message", (event) => {
-      console.log("Received resume:", event.data);
-
-      const combinedResults = [...results, event.data];
-      console.log("All completions so far:", combinedResults);
-
-      setResults(combinedResults);
-    });
-  }, [results, socket]);
 
   return (
     <div className="root grid grid-cols-2 gap-2 p-2">
