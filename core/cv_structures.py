@@ -247,7 +247,7 @@ class CriteriaCV:
             f"Academic requirements: {self.education!r}, \n"
             f"Experience requirements: {self.total_experience!r}, \n"
             f"Preferable professional experience: {self.commercial_experience!r}, \n"
-            f"Preferable private experience={self.private_experience!r})"
+            f"Preferable private experience={self.private_experience!r}"
         )
 
     def load(self, data: dict):

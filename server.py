@@ -51,12 +51,7 @@ batch_evaluation_queue: list[BatchResumeManualEvaluationTask] = []
 observers: list[WebSocket] = []
 
 # storing as string for now as they'll be only ever read in that format for now
-evaluated_resumes: list[str] = [
-    serialize_evaluation(CompletedResumeEvaluation("aaa", "aaa", True, "aaa")),
-    serialize_evaluation(CompletedResumeEvaluation("bbb", "bbb", False, "bbb")),
-    serialize_evaluation(CompletedResumeEvaluation("ccc", "ccc", True, "ccc")),
-    serialize_evaluation(CompletedResumeEvaluation("ddd", "ddd", False, "ddd")),
-]
+evaluated_resumes: list[str] = []
 
 
 def add_evaluated_resume(evaluation: CompletedResumeEvaluation):
@@ -99,7 +94,11 @@ async def resume_manual_evaluation(
                 parentId=batch_id,
                 resume_file_path=file_name,
                 is_eligible=eligibility_output.is_eligible,
-                explanation=eligibility_output.decision_explanation or None,
+                explanation=(
+                    eligibility_output.decision_explanation
+                    if "decision_explanation" in eligibility_output
+                    else None
+                ),
             )
         )
 
