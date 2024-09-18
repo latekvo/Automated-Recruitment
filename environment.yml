@@ -92,6 +92,7 @@ dependencies:
   - libcusparse=12.5.2.23
   - libexpat=2.6.2
   - libffi=3.4.2
+  - libgcc=14.1.0
   - libgcc-ng=14.1.0
   - libgfortran-ng=14.1.0
   - libgfortran5=14.1.0
@@ -108,6 +109,7 @@ dependencies:
   - libprotobuf=4.25.3
   - libre2-11=2023.09.01
   - libsqlite=3.46.0
+  - libstdcxx=14.1.0
   - libstdcxx-ng=14.1.0
   - libtorch=2.3.1
   - libuuid=2.38.1
@@ -195,6 +197,7 @@ dependencies:
   - uritemplate=4.1.1
   - urllib3=1.26.18
   - uvicorn=0.30.4
+  - websockets=13.0.1
   - wheel=0.43.0
   - wrapt=1.16.0
   - xz=5.2.6
