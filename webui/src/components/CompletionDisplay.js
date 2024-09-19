@@ -1,11 +1,14 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import UrlContext from "../context/UrlContext";
 
 export default function CompletionDisplay() {
   const storedResumes = useRef([]);
   const [displayedResumes, setDisplayedResumes] = useState([]);
+  const urlContext = useContext(UrlContext);
 
   const socket = useMemo(
-    () => new WebSocket("ws://localhost:8000/get_resume_evaluation_results"),
+    () =>
+      new WebSocket(urlContext.websocketUrl + `get_resume_evaluation_results`),
     [],
   );
 
