@@ -4,7 +4,7 @@ import dataclasses
 import json
 from dataclasses import dataclass
 
-from fastapi import FastAPI, UploadFile, File, Form, WebSocket
+from fastapi import FastAPI, UploadFile, File, Form, WebSocket, WebSocketException
 from fastapi.middleware.cors import CORSMiddleware
 
 from core.cv_evaluator import score_cv_eligibility_verbose, score_cv_eligibility
@@ -58,7 +58,11 @@ def add_evaluated_resume(evaluation: CompletedResumeEvaluation):
     serialized_evaluation = serialize_evaluation(evaluation)
     evaluated_resumes.append(serialized_evaluation)
     for observer in observers:
-        observer.send_text(serialized_evaluation)
+        try:
+            observer.send_text(serialized_evaluation)
+        except WebSocketException:
+            observer.close()
+            observers.remove(observer)
 
 
 @app.post("/resume_manual_evaluation")

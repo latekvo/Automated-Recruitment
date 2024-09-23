@@ -33,15 +33,20 @@ By reducing the candidate pool by 90%, we can extract those, who are worth revie
 
 - Make sure to have tesseract ocr command line utility installed on you machine.
 - Use provided conda environment to download all required packages.
-
+- Make sure to have `yarn` installed.
 
 #### Prepare environment:
 - `conda env create`
 
-#### CV assessment webui
+#### Webui backend
+- `conda activate AutomatedRecruitment`
+- `fastapi dev server.py --host 0.0.0.0`
+
+#### Webui frontend
+- prerequisite: `Webui backend`
 - `cd webui`
-- `npm install`
-- `npm start`
+- `yarn`
+- `yarn start`
 
 #### CV analysis test
 - `conda activate AutomatedRecruitment`

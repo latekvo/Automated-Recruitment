@@ -342,7 +342,7 @@ extraction_prompt = ChatPromptTemplate.from_messages(
         ),
         (
             "user",
-            "Current section: ```{section}``` Data: ```{data}```",
+            "Current section: ```{hint}``` Data: ```{data}```",
         ),
     ]
 )
