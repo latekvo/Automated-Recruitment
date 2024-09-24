@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import os
 from dataclasses import dataclass
 
 from fastapi import FastAPI, UploadFile, File, Form, WebSocket, WebSocketException
@@ -15,7 +16,7 @@ from core.utils import gen_uuid
 
 app = FastAPI()
 app.add_middleware(
-    CORSMiddleware,
+    CORSMiddleware,  # type: ignore
     allow_credentials=True,
     allow_origins=["*"],
     allow_methods=["*"],
@@ -50,13 +51,34 @@ def serialize_evaluation(
 batch_evaluation_queue: list[BatchResumeManualEvaluationTask] = []
 observers: list[WebSocket] = []
 
+
+evaluations_filepath = "evaluations.json"
+
+
+def load_evaluated_resumes() -> list[str]:
+    try:
+        with open(cache_path + evaluations_filepath, "r") as file:
+            dict_list = json.load(file)
+            return dict_list
+    except FileNotFoundError:
+        return []
+
+
+def save_evaluated_resumes():
+    os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+    with open(cache_path + evaluations_filepath, "w") as file:
+        serialized = json.dumps(evaluated_resumes)
+        file.write(serialized)
+
+
 # storing as string for now as they'll be only ever read in that format for now
-evaluated_resumes: list[str] = []
+evaluated_resumes: list[str] = load_evaluated_resumes()
 
 
 def add_evaluated_resume(evaluation: CompletedResumeEvaluation):
     serialized_evaluation = serialize_evaluation(evaluation)
     evaluated_resumes.append(serialized_evaluation)
+    save_evaluated_resumes()
     for observer in observers:
         try:
             observer.send_text(serialized_evaluation)

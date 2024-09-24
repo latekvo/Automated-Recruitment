@@ -8,8 +8,8 @@ export default function CompletionDisplay() {
 
   const socket = useMemo(
     () =>
-      new WebSocket(urlContext.websocketUrl + `get_resume_evaluation_results`),
-    [],
+      new WebSocket(urlContext.websocketUrl + "get_resume_evaluation_results"),
+    [urlContext.websocketUrl],
   );
 
   // Part 1: statistics
