@@ -1,3 +1,13 @@
-.vscode/PythonImportHelper-v2-Completion.json
-webui/package-lock.json
-/static/*
+# Editor files
+.vscode/
+.idea/
+
+# Local cache files
+static/
+cache/
+
+# Dynamically created files
+*.iml
+*.db
+node_modules/
+__pycache__/

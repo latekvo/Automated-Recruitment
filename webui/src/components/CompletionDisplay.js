@@ -6,16 +6,14 @@ export default function CompletionDisplay() {
   const [displayedResumes, setDisplayedResumes] = useState([]);
   const urlContext = useContext(UrlContext);
 
-  const socket = useMemo(
-    () =>
-      new WebSocket(urlContext.websocketUrl + "get_resume_evaluation_results"),
-    [urlContext.websocketUrl],
-  );
-
   // Part 1: statistics
   // Part 2: individual results + multi-format download: CSV, spreadsheet, etc.
 
   useEffect(() => {
+    const socket = new WebSocket(
+      urlContext.websocketUrl + "get_resume_evaluation_results"
+    );
+
     storedResumes.current = [];
     socket.onmessage = (event) => {
       const deserialized_data = JSON.parse(event.data);
@@ -23,7 +21,7 @@ export default function CompletionDisplay() {
       storedResumes.current.push(deserialized_data);
       setDisplayedResumes([...storedResumes.current]);
     };
-  }, [socket, setDisplayedResumes]);
+  }, [setDisplayedResumes]);
 
   let eligibleResumeCount = 0;
   let nonEligibleResumeCount = 0;
